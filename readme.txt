@@ -81,128 +81,122 @@
 
                     static std::string *getHours( const char *msg )
                     {
-                    	COMap		rqst( msg );																					// Create an instance of a COMap from the message
-                    	COString	*sPtr;																							// Used as a temporary pointer to a COString object
-                    	std::string	*reply = NULL;																					// The reply string
+                        COMap           rqst( msg );                                                                               // Create an instance of a COMap from the message
+                        COString        *sPtr;	                                                                                   // Used as a temporary pointer to a COString object
+                    	std::string     *reply = NULL;                                                                             // The reply string
 
-                    	/*
-                    	 * Start by making sure the message could be istatnitated as a COMap object and that it contains a string named "to" and equals "receiving";
-                    	 */
-                    	if( CppON::isMap( &rqst ) && CppON::isString( sPtr = (COString *) rqst.findCaseElement( "to" ) ) && 0 == strcasecmp( sPtr->c_str(), "receiving" ) )
+                        /*
+                         * Start by making sure the message could be istatnitated as a COMap object and that it contains a string named "to" and equals "receiving";
+                         */
+                        if( CppON::isMap( &rqst ) && CppON::isString( sPtr = (COString *) rqst.findCaseElement( "to" ) ) && 0 == strcasecmp( sPtr->c_str(), "receiving" ) )
                     	{
-                    		COMap		rsp( "{\"from\":\"receiving\"}"  );															// create the basic object that will be uses to create the response
-                    		std::string request;																					// This will hold the request string pulled from the message.
+                            COMap           rsp( "{\"from\":\"receiving\"}"  );                                                    // create the basic object that will be uses to create the response
+                            std::string request;                                                                                   // This will hold the request string pulled from the message.
 
-                    		if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "from" ) ) )								// Check who the message was from and if found, then address the response to them
-                    		{
-                    			rsp.append( "to", new COString( sPtr->c_str() ) );
-                    		}
-                    		if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "request" ) ) )							// Look for the request string in the message to determine what the sender wants
-                    		{
-                    			request = sPtr->c_str();
-                    		}
-                    		if( ! request.compare( "hours" ) )																		// Do they want the hours for a list of people? (This could have been an array but we want
-                    		{																										// to demonstrate the "extract" method.
-                    			COMap		*people = (COMap *) rqst.extract( "people" );											// It's a request for hours so there should be a "peoples" object.  Extract it from the
-                    																												// message so we can add it to the response and it won't be destroyed when the rqst is destroyed
-                    			COMap   	*info = (COMap *) CppON::parseJsonFile( "./hours.json" );								// Read the hours file into a CppON object and cast it to a COMap;
-                    			COMap		*hours;																					// This will be the "hours" object in the file that was read
-
-                    			/*
-			                     * Verify that the "people" object was found in the message and that it was a object
-	                    		 * also verify that the data read from the file was a valid JSON object and that it contains a "hours" object
-			                     */
-			                    if( CppON::isMap( info ) && CppON::isMap( people ) && CppON::isMap( hours = (COMap *) info->findElement( "hours" ) ) )
-			                    {
-				                    for( std::map<std::string, CppON *>::iterator it = people->begin(); people->end() != it; it++ ) // OK, all the data looks good iterate through the people and add their hours
-				                    {																								// The object name will be the persons name and the value should be a value of type CODouble
-					                    COMap *h = (COMap*) hours->findCaseElement( it->first.c_str() );							// Look for the person in the hours we read from the file
-			                    		/*
-			                    		 * The following is done because we chose to extract the object from the message and we need to verify it is initialized to the right type and value
-				                    	 */
-				                    	if( CppON::isDouble( it->second ) )															// But before we do anything make sure the value we extracted from the message is a double and it
-			                    		{																							// is initially set to 0.0
-				                    		*( (CODouble *) it->second ) = 0.0;
-				                    	} else {
-		                    				delete it->second;																		// if it isn't a double then delete it and replace it with a CODouble set to 0.0
-				                    		it->second = new CODouble( 0.0 );
-				                    	}
-				                    	((CODouble *) it->second)->Precision( 2 );													// Make sure the precision is set to 2 because we don't need 10 decimal places.
-
-			                    		if( h )																						// Make sure the person was listed in the file and has hours
-			                    		{
-	                    					for( std::map<std::string, CppON *>::iterator ith = h->begin(); h->end() != ith; ith++ ) // Iterate through the days the person has hours for and add them to the total
-				                    		{
-                    							if( CppON::isNumber( ith->second ) )
-					                    		{
-                    								*( ( CODouble *) it->second ) += ( ith->second->toDouble() );
-					                    		}
-						                    }
-                    					}
-			                    	}
-				                    delete( info );																					// We don't need the data from the file anymore so delete to free up the resources
-							                    																					// (The static parseJsonFile() method uses the new operator)
-			                    	rsp.append( "people", people );																	// Since we "extracted" the "people" object from the "rqust" object we now own it and
-		                    																										// can append it to the response object (Yes! it would have been simpler to just create
-				                    																								// s new one, but this was done for demonstration purposes.
-                    			} else {
-			                    	rsp.append( "response", new COString( "Request failed: Hours file is corrupt" ) );
-			                    }
-	                    	} else if( ! request.compare( "info" ) ) {																// If the request was for "info" it is for just one person listed as "employee" in the request
-			                    if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "employee" ) ) )						// Look for the "employee" string.  It will be the name of the person
-		                    	{
-				                    COMap   	*info = (COMap *) CppON::parseJsonFile( "./hours.json" );							// Load the hours information
-		                    		COMap		*employee;
-			                    	std::string path( "hours/" );																	// We are going to build a path to use to get the hours information to show a different way to do it
-				                    double		total = 0.0;
-
-			                    	path.append( sPtr->c_str() );																	// We should be able to get the hours object by searching for the object in the info object by
-						                    																						// "hours.<name>" where <name> is the employee name.
-				                    if( CppON::isMap( info ) && CppON::isMap( employee = (COMap *) info->findCaseElement( path.c_str() ) ) ) // Look for user information in file
-	                    			{																								// If found then add up the persons ours in our local variable "total"
-			                    		for( std::map<std::string, CppON *>::iterator ith = employee->begin(); employee->end() != ith; ith++ )
-				                    	{
-						                    if( CppON::isNumber( ith->second ) )
-					                    	{
-                    							total += ( ith->second->toDouble() );
-					                    	}
-                    					}
-				                    }
-                    				CODouble	*d;
-				                    rsp.append( "response", employee = new COMap() );												// Create a new Map object to hold the response and add it to the response
-			                    	employee->append( sPtr->c_str(), d = new CODouble( total ) );									// Add the employee hours to the map object in the response
-				                    d->Precision( 2 );																				// Set the precision to 2 digits
-			                    	delete info;
-			                    } else {
-				                    rsp.append( "response", "No employee given" );
-	                    		}
-		                    } else {
-			                    request.insert( 0, "Requested item not known: " );
-		                    	rsp.append( "response", new COString( request ) );
-		                    }
-		                    reply = rsp.toCompactJsonString();																		// create a compact string representation of the object (Note: the rsp object is deleted
-		                    																										// when it goes out of scope )
-	                    } else {
-		                    reply = new std::string( "{\"from\":\"receiving\",\"response\":\"Invalid message request\"}");
-                    	}
-
-                    	return reply;
+                            if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "from" ) ) )                            // Check who the message was from and if found, then address the response to them
+                            {
+                                rsp.append( "to", new COString( sPtr->c_str() ) );
+                            }
+                            if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "request" ) ) )                         // Look for the request string in the message to determine what the sender wants
+                            {
+                                request = sPtr->c_str();
+                            }
+                            if( ! request.compare( "hours" ) )                                                                     // Do they want the hours for a list of people? (This could have been an array but we want
+                            {                                                                                                      // to demonstrate the "extract" method.
+                               COMap        *people = (COMap *) rqst.extract( "people" );                                          // It's a request for hours so there should be a "peoples" object.  Extract it from the
+                                                                                                                                   // message so we can add it to the response and it won't be destroyed when the rqst is destroyed
+                               COMap        *info = (COMap *) CppON::parseJsonFile( "./hours.json" );                              // Read the hours file into a CppON object and cast it to a COMap;
+                               COMap        *hours;                                                                                // This will be the "hours" object in the file that was read
+                               /*
+                                * Verify that the "people" object was found in the message and that it was a object
+                                * also verify that the data read from the file was a valid JSON object and that it contains a "hours" object
+                                */
+                               if( CppON::isMap( info ) && CppON::isMap( people ) && CppON::isMap( hours = (COMap *) info->findElement( "hours" ) ) )
+                               {
+                                   for( std::map<std::string, CppON *>::iterator it = people->begin(); people->end() != it; it++ ) // OK, all the data looks good iterate through the people and add their hours
+                                   {                                                                                               // The object name will be the persons name and the value should be a value of type CODouble
+                                       COMap *h = (COMap*) hours->findCaseElement( it->first.c_str() );                            // Look for the person in the hours we read from the file
+                                       /*
+                                        * The following is done because we chose to extract the object from the message and we need to verify it is initialized to the right type and value
+                                        */
+                                       if( CppON::isDouble( it->second ) )                                                        // But before we do anything make sure the value we extracted from the message is a double and it
+                                       {                                                                                          // is initially set to 0.0
+                                           *( (CODouble *) it->second ) = 0.0;
+                                       } else {
+                                           delete it->second;                                                                     // if it isn't a double then delete it and replace it with a CODouble set to 0.0
+                                           it->second = new CODouble( 0.0 );
+                                       }
+                                       ((CODouble *) it->second)->Precision( 2 );                                                 // Make sure the precision is set to 2 because we don't need 10 decimal places.
+                                       if( h )	                                                                                  // Make sure the person was listed in the file and has hours
+                                       {
+                                           for( std::map<std::string, CppON *>::iterator ith = h->begin(); h->end() != ith; ith++ ) // Iterate through the days the person has hours for and add them to the total
+                                           {
+                                               if( CppON::isNumber( ith->second ) )
+                                               {
+                                                   *( ( CODouble *) it->second ) += ( ith->second->toDouble() );
+                                               }
+                                           }
+                                       }
+                                   }
+                                   delete( info );                                                                                // We don't need the data from the file anymore so delete to free up the resources
+                                                                                                                                             // (The static parseJsonFile() method uses the new operator)
+                                   rsp.append( "people", people );                                                                // Since we "extracted" the "people" object from the "rqust" object we now own it and
+                                                                                                                                             // can append it to the response object (Yes! it would have been simpler to just create
+                                                                                                                                             // s new one, but this was done for demonstration purposes.
+                                } else {
+			            rsp.append( "response", new COString( "Request failed: Hours file is corrupt" ) );
+                                }
+                            } else if( ! request.compare( "info" ) ) {                                                            // If the request was for "info" it is for just one person listed as "employee" in the request
+                                if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "employee" ) ) )                   // Look for the "employee" string.  It will be the name of the person
+                                {
+                                    COMap         *info = (COMap *) CppON::parseJsonFile( "./hours.json" );                       // Load the hours information
+                                    COMap         *employee;
+                                    std::string   path( "hours/" );                                                               // We are going to build a path to use to get the hours information to show a different way to do it
+                                    double        total = 0.0;
+                                    path.append( sPtr->c_str() );                                                                 // We should be able to get the hours object by searching for the object in the info object by
+                                                                                                                                  // "hours.<name>" where <name> is the employee name
+                                    if( CppON::isMap( info ) && CppON::isMap( employee = (COMap *) info->findCaseElement( path.c_str() ) ) ) // Look for user information in file
+                                    {                                                                                             // If found then add up the persons ours in our local variable "total"
+                                        for( std::map<std::string, CppON *>::iterator ith = employee->begin(); employee->end() != ith; ith++ )
+                                        {
+                                            if( CppON::isNumber( ith->second ) )
+                                            {
+                                                total += ( ith->second->toDouble() );
+                                            }
+                                        }
+                                    }
+                                    CODouble	*d;
+                                    rsp.append( "response", employee = new COMap() );                                             // Create a new Map object to hold the response and add it to the response
+                                    employee->append( sPtr->c_str(), d = new CODouble( total ) );                                 // Add the employee hours to the map object in the response
+                                    d->Precision( 2 );                                                                            // Set the precision to 2 digits
+                                    delete info;
+                                } else {
+                                    rsp.append( "response", "No employee given" );
+                                }
+                            } else {
+                                request.insert( 0, "Requested item not known: " );
+                                rsp.append( "response", new COString( request ) );
+                            }
+                            reply = rsp.toCompactJsonString();                                                                    // create a compact string representation of the object (Note: the rsp object is deleted
+                                                                                                                                  // when it goes out of scope )
+                        } else {
+                            reply = new std::string( "{\"from\":\"receiving\",\"response\":\"Invalid message request\"}");
+                        }
+                        return reply;
                     }
-
                     int main( int argc, char **argv )
                     {
-	                    std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",\"request\":\"hours\",\"people\":{\"Alice\":0,\"Fred\":0,\"Mary\":0,\"Sam\":0,\"Tom\":0.0}}" );
-                    //	std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",\"request\":\"info\",\"employee\":\"Alice\"}" );
-	                    std::string *hours = getHours( msg.c_str() );
-	                    if( hours )
-	                    {
-		                    fprintf( stderr, "Hours: %s\n", hours->c_str() );
-		                    delete( hours );
+                        std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",\"request\":\"hours\",\"people\":{\"Alice\":0,\"Fred\":0,\"Mary\":0,\"Sam\":0,\"Tom\":0.0}}" );
+//                      std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",\"request\":\"info\",\"employee\":\"Alice\"}" );
+                        std::string *hours = getHours( msg.c_str() );
+                        if( hours )
+                        {
+                            fprintf( stderr, "Hours: %s\n", hours->c_str() );
+                            delete( hours );
                     	} else {
-		                    fprintf( stderr, "Failed to get hours\n" );
-                    	}
-
-                    	return 0;
+                            fprintf( stderr, "Failed to get hours\n" );
+                        }
+                        return 0;
                     }
 
    Class Libraries: There are three shared class libraries as described below:
