@@ -4704,16 +4704,22 @@ COString::COString( const char *st, bool base64) : CppON( STRING_CPPON_OBJ_TYPE 
 COString::COString( uint64_t val, bool hex ) : CppON( STRING_CPPON_OBJ_TYPE )
 {
 	char buf[ 32 ];
+#if SIXTY_FOUR_BIT
 	if( hex )
 	{
-#if SIXTY_FOUR_BIT
 		snprintf( buf, 31, "0x%.16lX", val );
+	} else {
+		snprintf( buf, 31, "%lu", val );
+	}
 #else
+	if( hex )
+	{
 		snprintf( buf, 31, "0x%.16llX", val );
-#endif
 	} else {
 		snprintf( buf, 31, "%llu", val );
 	}
+
+#endif
 	data = new std::string( buf );
 }
 COString::COString( uint32_t val, bool hex ) : CppON( STRING_CPPON_OBJ_TYPE )
@@ -4730,16 +4736,21 @@ COString::COString( uint32_t val, bool hex ) : CppON( STRING_CPPON_OBJ_TYPE )
 COString *COString::operator = ( uint64_t val )
 {
 	char buf[ 32 ];
+#if SIXTY_FOUR_BIT
 	if( data && '0' == ((std::string *) data)->at( 0 )  )
 	{
-#if SIXTY_FOUR_BIT
 		snprintf( buf, 31, "0x%.16lX", val );
+	} else {
+		snprintf( buf, 31, "%lu", val );
+	}
 #else
+	if( data && '0' == ((std::string *) data)->at( 0 )  )
+	{
 		snprintf( buf, 31, "0x%.16llX", val );
-#endif
 	} else {
 		snprintf( buf, 31, "%llu", val );
 	}
+#endif
 	if( data )
 	{
 		*( ( std::string *) data) = buf;

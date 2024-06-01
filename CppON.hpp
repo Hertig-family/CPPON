@@ -185,7 +185,7 @@
 #define CPPON_HPP_
 
 #define HAS_XML 0
-#define SIXTY_FOUR_BIT 0
+#define SIXTY_FOUR_BIT 1
 
 #include <stdlib.h>
 #include <stdio.h>
