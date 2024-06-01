@@ -1,135 +1,202 @@
          File Name: Readme.txt
         Created on: 10 Jan 2010 - 26 May 2024
             Author: Jeff Hertig
-       Description: CPPON - C++ Object Notation.  In short, this is JSON for C++, made easy.  Its original intent was to make working with JSON 
-                    messages in C++ easy but it became much, much more.  It actually start as a library meant to may working with XML messages easier,
-                    but really found it place when JSON came on the scene. The name has been changed many times over the years but because its 
-                    fundamental purpose is to do for C++ what JSON does for JavaScript its name has recently been changed to what it is now.
+       Description: CPPON - C++ Object Notation.  In short, this is JSON for C++, made easy.  Its original intent 
+                    was to make working with JSON messages in C++ easy but it became much, much more.  It actually 
+                    start as a library meant to may working with XML messages easier, but really found it place 
+                    when JSON came on the scene. The name has been changed many times over the years but because 
+                    its fundamental purpose is to do for C++ what JSON does for JavaScript its name has recently 
+                    been changed to what it is now.
                    
-        What it is: It is a C++ Shared Library which implements a class hierarchy representing a JSON message.  It can take a JSON message and insatiate
-                    a C++ class structure representing all the elements of the message and allow them to be read/manipulated by the C++ program. The 
-                    data objects and/or structure can be accessed/manipulated using “paths” in much the same way as it is in JavaScript.
+        What it is: It is a C++ Shared Library which implements a class hierarchy representing a JSON message.  It
+                    can take a JSON message and insatiate a C++ class structure representing all the elements of 
+                    the message and allow them to be read/manipulated by the C++ program. The data objects and/or 
+                    structure can be accessed/manipulated using “paths” in much the same way as it is in JavaScript.
 
-                    The class hierarchy is all derived from a single base class with two container classes and five base objects representing float,
-                    integer, string, boolean, and the null data types.  The two “container” classes which are implemented as a “std::map” and a 
-                    “std::vector” (complete with iterators) can hold any of the object types.
+                    The class hierarchy is all derived from a single base class with two container classes and five 
+                    base objects representing float, integer, string, boolean, and the null data types.  The two 
+                    “container” classes which are implemented as a “std::map” and a “std::vector” (complete with 
+                    iterators) can hold any of the object types.
 
-                    Any valid JSON string or file can be parsed into a complete data structure with a single command without the need to even know the 
-                    messages contents. The system also works with TNetStrings (and certain XML if compiled with the option to do so.)  Of course the 
-                    structure can also be created problematically either a string or built up element by element in the code. (Note: When using 
-                    TNetStrings or XML binary is supported but caution is advised when/if then attempting to convert it to JSON)
+                    Any valid JSON string or file can be parsed into a complete data structure with a single command 
+                    without the need to even know the messages contents. The system also works with TNetStrings (and 
+                    certain XML if compiled with the option to do so.)  Of course the structure can also be created 
+                    problematically either a string or built up element by element in the code. (Note: When using 
+                    TNetStrings or XML binary is supported but caution is advised when/if then attempting to convert 
+                    it to JSON)
 
-                    At any point a single method can be called to create a string or file from the hierarchy in either a verbose, human readable form or
-                    a compact (sans white space) form.
+                    At any point a single method can be called to create a string or file from the hierarchy in 
+                    either a verbose, human readable form or a compact (sans white space) form.
 
-           History: As earlier stated, This started in early 2010 as a means of working with XML encoded messages.  But as XML is very flexible it often
-                    required customization depending on the message structure/content.  When JSON became popular this was no long an issue as all JSON
-                    can be represented by one of seven objects. (Two container and five base objects)
+           History: As earlier stated, This started in early 2010 as a means of working with XML encoded messages.
+                    But as XML is very flexible it often required customization depending on the message structure/
+                    content.  When JSON became popular this was no long an issue as all JSON can be represented by 
+                    one of seven objects. (Two container and five base objects)
 
-                    As JSON became the de facto standard for massage protocol the library because very useful and XML was pretty much abandoned. (It is 
-                    still available but requires additional dependent libraries.)
+                    As JSON became the de facto standard for massage protocol the library because very useful and 
+                    XML was pretty much abandoned. (It is still available but requires additional dependent 
+                    libraries.)
 
-                    Soon the library because valuable in another unforeseen way.  It became a way to implement “Soft Structures” in C++:  Internal data
-                    structures can now be defined by JSON configuration files and instantiated at run time.  While obvious not as “high performance” as
-                    hard-coded data structures and Class structures, in the embedded equipment world where configurations often change being able to 
-                    define the internal data structures from a configuration file has some real advantages.
+                    Soon the library because valuable in another unforeseen way.  It became a way to implement “Soft 
+                    Structures” in C++:  Internal data structures can now be defined by JSON configuration files and
+                    instantiated at run time.  While obvious not as “high performance” as hard-coded data structures 
+                    and Class structures, in the embedded equipment world where configurations often change being 
+                    able to define the internal data structures from a configuration file has some real advantages.
                     
-                    Soon whole systems were being designed around the concept of “soft structures” which lead to a problem.  The class structure could
-                    be instantiated and in a single application but when multiple applications needed the same information they had to have their own 
-                    structure and rely on complex message queues to synchronize the data.
+                    Soon whole systems were being designed around the concept of “soft structures” which lead to a 
+                    problem.  The class structure could be instantiated and in a single application but when
+                    multiple applications needed the same information they had to have their own structure and rely
+                    on complex message queues to synchronize the data.
 
-                    This gave rise to a companion class structure the Shared C++ Object (SCppObj) which when instantiated existed in system shared 
-                    memory.  This class mimics the original CPPON class but exists outside of any one application and has built in protection against 
-                    data corruption from simultaneous access.  Although this class has one serious limitation:  Once created (and initialized) it’s data
-                    structure is fixed.  It exists with the same data structure until it is intentionally destroyed (and all references to it are closed)
-                    or a system reboot.
+                    This gave rise to a companion class structure the Shared C++ Object (SCppObj) which when
+                    instantiated existed in system shared memory.  This class mimics the original CPPON class but
+                    exists outside of any one application and has built in protection against data corruption from
+                    simultaneous access.  Although this class has one serious limitation:  Once created (and
+                    initialized) it’s data structure is fixed.  It exists with the same data structure until it is
+                    intentionally destroyed (and all references to it are closed) or a system reboot.
 
-                    The big advantage of this class is that it allows the “soft structure” implementation to be system wide with the same flexibility of
-                    being defined by a JSON file where the system state can be stored/read in real time by many different applications.
+                    The big advantage of this class is that it allows the “soft structure” implementation to be
+                    system wide with the same flexibility of being defined by a JSON file where the system state
+                    can be stored/read in real time by many different applications.
 
-                    This leads to another issue.  When something changes in the SCppObj class the applications have no way of knowing the data has changed
-                    without comparing it to another local value or checking the update time.  This can be a rather tedious process.
+                    This leads to another issue.  When something changes in the SCppObj class the applications have
+                    no way of knowing the data has changed without comparing it to another local value or checking
+                    the update time.  This can be a rather tedious process.
 
-                    For that reason another companion class was added.  The Local C++ Object (LocalCppObj) class.  This class has one function.  It is a 
-                    local image of the ScppObj class that when queried will return a list of things that changed since the last time it was queried.
+                    For that reason another companion class was added.  The Local C++ Object (LocalCppObj) class.
+                    This class has one function.  It is a local image of the ScppObj class that when queried will
+                    return a list of things that changed since the last time it was queried.
 
-                    Of course the response is in the form of a CPPON instance which can of course be either iterated through or used to produce a JSON 
-                    string to be sent as a message.
+                    Of course the response is in the form of a CPPON instance which can of course be either
+                    iterated through or used to produce a JSON string to be sent as a message.
            example: /*
-                     * A little demonstration program to show some features of the C++ Object Notation library (CPPON).  This program takes a string as if it was received as a JSON message
-                     * from an accounting department request the ours the some people worked.  It reads the hours worked per day from a JSON file stored in the local director, adds the hours
-                     * for each person and returns a JSON string giving the hours.
+                     * A little demonstration program to show some features of the C++ Object Notation library
+                     * (CPPON).  This program takes a string as if it was received as a JSON message from an
+                     * accounting department request the ours the some people worked.  It reads the hours worked
+                     * per day from a JSON file stored in the local director, adds the hours for each person and
+                     * returns a JSON string giving the hours.
                      *
-                     * It is a simple program and meant to show a variety of features, not necessarily the best way to do the operation.
+                     * It is a simple program and meant to show a variety of features, not necessarily the best way
+                     * to do the operation.
                      *
                      * The file red from the disk contains the following data: in compact JSON form:
+                     * 	{"Week":"5/22/2024","hours":{"Alice {"Monday":8.2,"Tuesday":8.1,"Wednesday":8.5, \ 
+                     *  "Thursday":7.9,"Firday":8.0},"Fred":{"Monday":8.0,"Tuesday":8.3,"Wednesday":8.1, \
+                     *  "Thursday":8.8,"Firday":8.0},"Sam":{"Monday":8.2,"Tuesday":8.6,"Wednesday":8.0, \ 
+                     *  "Thursday":8.5,"Saturday":10.0},"Tom":{"Monday":8.0}}}
                      *
-                     * 		{"Week":"5/22/2024","hours":{"Alice":{"Monday":8.2,"Tuesday":8.1,"Wednesday":8.5,"Thursday":7.9,"Firday":8.0},"Fred":{"Monday":8.0,"Tuesday":8.3,"Wednesday":8.1, \
-                     *      "Thursday":8.8,"Firday":8.0},"Sam":{"Monday":8.2,"Tuesday":8.6,"Wednesday":8.0,"Thursday":8.5,"Saturday":10.0},"Tom":{"Monday":8.0}}}
+                     * getHours is the function that does the work.  It takes a message in the form of a C string
+                     * that should represent a JSON Object.  The object is a message from the accounting department
                      *
-                     */
-                    /*
-                     * getHours is the function that does the work.  It takes a message in the form of a C string that should represent a JSON Object.  The object is a message from the accounting department
+                     * It immediately instantiates a COMap from the message and checks that its valid and that it
+                     * contains a string object named "to" that is equal to "receiving" to verify the message is
+                     * for the receiving department.  if it is it will process it.  Otherwise it will return an
+                     * error message.
                      *
-                     * It immediately instantiates a COMap from the message and checks that its valid and that it contains a string object named "to" that is equal to "receiving" to verify the message is for the
-                     * receiving department.  if it is it will process it.  Otherwise it will return an error message.
-                     *
-                     * The request is processed by first looking for a string called "request" and then checking it to see what they are requesting.  In this simple example there are to possible requests, hours
-                     * which is asking for the "hours" of a number of people listed in a "people" object as a named numbers (the values will be ignored).  Or the number of hours for "info" of a single person given
-                     * in a string named "employee""
+                     * The request is processed by first looking for a string called "request" and then checking it
+                     * to see what they are requesting.  In this simple example there are to possible requests,
+                     * hours which is asking for the "hours" of a number of people listed in a "people" object as a
+                     * named numbers (the values will be ignored).  Or the number of hours for "info" of a single
+                     * person given in a string named "employee""
                      */
 
                     static std::string *getHours( const char *msg )
                     {
-                        COMap           rqst( msg );                                                                               // Create an instance of a COMap from the message
-                        COString        *sPtr;	                                                                                   // Used as a temporary pointer to a COString object
-                    	std::string     *reply = NULL;                                                                             // The reply string
-
+                        COMap           rqst( msg );    // Create an instance of a COMap from the message
+                        COString        *sPtr;	        // Used as a temporary pointer to a COString object
+                    	std::string     *reply = NULL;  // The reply string
                         /*
-                         * Start by making sure the message could be istatnitated as a COMap object and that it contains a string named "to" and equals "receiving";
+                         * Start by making sure the message could be istatnitated as a COMap object and that it
+                         * contains a string named "to" and equals "receiving";
                          */
-                        if( CppON::isMap( &rqst ) && CppON::isString( sPtr = (COString *) rqst.findCaseElement( "to" ) ) && 0 == strcasecmp( sPtr->c_str(), "receiving" ) )
+                        if( CppON::isMap( &rqst ) && 
+                            CppON::isString( sPtr = (COString *) rqst.findCaseElement( "to" ) ) && 
+                            0 == strcasecmp( sPtr->c_str(), "receiving" ) )
                     	{
-                            COMap           rsp( "{\"from\":\"receiving\"}"  );                                                    // create the basic object that will be uses to create the response
-                            std::string request;                                                                                   // This will hold the request string pulled from the message.
-
-                            if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "from" ) ) )                            // Check who the message was from and if found, then address the response to them
+                            /* Create the basic object that will be uses to create the response */
+                            COMap       rsp( "{\"from\":\"receiving\"}"  ); 
+                            /* This will hold the request string pulled from the message. */
+                            std::string request;
+                            /* Check who the message was from and if found, then address the response to them */
+                            if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "from" ) ) )
                             {
                                 rsp.append( "to", new COString( sPtr->c_str() ) );
                             }
-                            if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "request" ) ) )                         // Look for the request string in the message to determine what the sender wants
+                            /* Look for the request string in the message to determine what the sender wants */
+                            if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "request" ) ) )
                             {
                                 request = sPtr->c_str();
                             }
-                            if( ! request.compare( "hours" ) )                                                                     // Do they want the hours for a list of people? (This could have been an array but we want
-                            {                                                                                                      // to demonstrate the "extract" method.
-                               COMap        *people = (COMap *) rqst.extract( "people" );                                          // It's a request for hours so there should be a "peoples" object.  Extract it from the
-                                                                                                                                   // message so we can add it to the response and it won't be destroyed when the rqst is destroyed
-                               COMap        *info = (COMap *) CppON::parseJsonFile( "./hours.json" );                              // Read the hours file into a CppON object and cast it to a COMap;
-                               COMap        *hours;                                                                                // This will be the "hours" object in the file that was read
+                            /*
+                             * Do they want the hours for a list of people? (This could have been an array but 
+                             * we want to demonstrate the "extract" method.
+                             */
+                            if( ! request.compare( "hours" ) )
+                            {
+                               /*
+                                * It's a request for hours so there should be a "peoples" object.  Extract it from
+                                * the message so we can add it to the response and it won't be destroyed when the
+                                * rqst is destroyed.
+                                */
+                               COMap        *people = (COMap *) rqst.extract( "people" );
+                               /* Read the hours file into a CppON object and cast it to a COMap */
+                               COMap        *info = (COMap *) CppON::parseJsonFile( "./hours.json" );
+                               /* This will be the "hours" object in the file that was read */
+                               COMap        *hours;
                                /*
                                 * Verify that the "people" object was found in the message and that it was a object
-                                * also verify that the data read from the file was a valid JSON object and that it contains a "hours" object
+                                * also verify that the data read from the file was a valid JSON object and that it
+                                * contains a "hours" object
                                 */
-                               if( CppON::isMap( info ) && CppON::isMap( people ) && CppON::isMap( hours = (COMap *) info->findElement( "hours" ) ) )
+                               if( CppON::isMap( info ) && 
+                                   CppON::isMap( people ) && 
+                                   CppON::isMap( hours = (COMap *) info->findElement( "hours" ) ) )
                                {
-                                   for( std::map<std::string, CppON *>::iterator it = people->begin(); people->end() != it; it++ ) // OK, all the data looks good iterate through the people and add their hours
-                                   {                                                                                               // The object name will be the persons name and the value should be a value of type CODouble
-                                       COMap *h = (COMap*) hours->findCaseElement( it->first.c_str() );                            // Look for the person in the hours we read from the file
+                                   /*
+                                    * OK, all the data looks good iterate through the people and add their hours
+                                    * The object name will be the persons name and the value should be a value of
+                                    * type CODouble
+                                    */
+                                   for( std::map<std::string, CppON *>::iterator it = people->begin(); 
+                                        people->end() != it; 
+                                        it++ )
+                                   {
+                                       /* Look for the person in the hours we read from the file */
+                                       COMap *h = (COMap*) hours->findCaseElement( it->first.c_str() );
                                        /*
-                                        * The following is done because we chose to extract the object from the message and we need to verify it is initialized to the right type and value
+                                        * The following is done because we chose to extract the object from the
+                                        * message and we need to verify it is initialized to the right type and
+                                        * value
                                         */
-                                       if( CppON::isDouble( it->second ) )                                                        // But before we do anything make sure the value we extracted from the message is a double and it
-                                       {                                                                                          // is initially set to 0.0
+                                       /*
+                                        * But before we do anything make sure the value we extracted from the
+                                        * message is a double and it is initially set to 0.0
+                                        */
+                                       if( CppON::isDouble( it->second ) )
+                                       {
                                            *( (CODouble *) it->second ) = 0.0;
+                                       /*
+                                        * if it isn't a double then delete it and replace it with a CODouble set to
+                                        * 0.0
+                                        */
                                        } else {
-                                           delete it->second;                                                                     // if it isn't a double then delete it and replace it with a CODouble set to 0.0
+                                           delete it->second;
                                            it->second = new CODouble( 0.0 );
                                        }
-                                       ((CODouble *) it->second)->Precision( 2 );                                                 // Make sure the precision is set to 2 because we don't need 10 decimal places.
-                                       if( h )	                                                                                  // Make sure the person was listed in the file and has hours
+                                       /* 
+                                        * Make sure the precision is set to 2 because we don't need 10 decimal
+                                        * places.
+                                        */
+                                       ((CODouble *) it->second)->Precision( 2 );
+                                       /* Make sure the person was listed in the file and has hours */
+                                       if( h )
                                        {
-                                           for( std::map<std::string, CppON *>::iterator ith = h->begin(); h->end() != ith; ith++ ) // Iterate through the days the person has hours for and add them to the total
+                                           /*
+                                            * Iterate through the days the person has hours for and add them to the
+                                            * total
+                                            */
+                                           for( std::map<std::string, CppON *>::iterator ith = h->begin(); 
+                                                h->end() != ith; ith++ )
                                            {
                                                if( CppON::isNumber( ith->second ) )
                                                {
@@ -138,26 +205,50 @@
                                            }
                                        }
                                    }
-                                   delete( info );                                                                                // We don't need the data from the file anymore so delete to free up the resources
-                                                                                                                                             // (The static parseJsonFile() method uses the new operator)
-                                   rsp.append( "people", people );                                                                // Since we "extracted" the "people" object from the "rqust" object we now own it and
-                                                                                                                                             // can append it to the response object (Yes! it would have been simpler to just create
-                                                                                                                                             // s new one, but this was done for demonstration purposes.
+                                   /* 
+                                    * We don't need the data from the file anymore so delete to free up the
+                                    * resources. (The static parseJsonFile() method uses the new operator)
+                                    */
+                                   delete( info );
+                                   /*
+                                    * Since we "extracted" the "people" object from the "rqust" object we now own
+                                    * it and can append it to the response object (Yes! it would have been simpler
+                                    * to just create a new one, but this was done for demonstration purposes.
+                                    */
+                                   rsp.append( "people", people );
                                 } else {
-			            rsp.append( "response", new COString( "Request failed: Hours file is corrupt" ) );
+			            rsp.append( "response", new COString("Request failed: Hours file is corrupt") );
                                 }
-                            } else if( ! request.compare( "info" ) ) {                                                            // If the request was for "info" it is for just one person listed as "employee" in the request
-                                if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "employee" ) ) )                   // Look for the "employee" string.  It will be the name of the person
+                            } else if( ! request.compare( "info" ) ) {
+                                /*
+                                 * If the request was for "info" it is for just one person listed as "employee" 
+                                 * in the request.
+                                 * 
+                                 * Look for the "employee" string.  It will be the name of the person
+                                 */
+                                if( CppON::isString( sPtr = (COString *) rqst.findCaseElement( "employee" ) ) ) 
                                 {
-                                    COMap         *info = (COMap *) CppON::parseJsonFile( "./hours.json" );                       // Load the hours information
+                                    /* Load the hours information */
+                                    COMap         *info = (COMap *) CppON::parseJsonFile( "./hours.json" );
                                     COMap         *employee;
-                                    std::string   path( "hours/" );                                                               // We are going to build a path to use to get the hours information to show a different way to do it
+                                    /*
+                                     *  We are going to build a path to use to get the hours information to show a
+                                     * different way to do it
+                                     */
+                                    std::string   path( "hours/" );
                                     double        total = 0.0;
-                                    path.append( sPtr->c_str() );                                                                 // We should be able to get the hours object by searching for the object in the info object by
-                                                                                                                                  // "hours.<name>" where <name> is the employee name
-                                    if( CppON::isMap( info ) && CppON::isMap( employee = (COMap *) info->findCaseElement( path.c_str() ) ) ) // Look for user information in file
-                                    {                                                                                             // If found then add up the persons ours in our local variable "total"
-                                        for( std::map<std::string, CppON *>::iterator ith = employee->begin(); employee->end() != ith; ith++ )
+                                    /*
+                                     * We should be able to get the hours object by searching for the object in the
+                                     * info object by  "hours.<name>" where <name> is the employee name
+                                     */
+                                    path.append( sPtr->c_str() );
+                                    /* Look for user information in file */
+                                    if( CppON::isMap( info ) && 
+                                        CppON::isMap(employee = (COMap *) info->findCaseElement( path.c_str() ) ) )
+                                    {
+                                        /* If found then add up the persons ours in our local variable "total" */
+                                        for( std::map<std::string, CppON *>::iterator ith = employee->begin();
+                                             employee->end() != ith; ith++ )
                                         {
                                             if( CppON::isNumber( ith->second ) )
                                             {
@@ -166,9 +257,12 @@
                                         }
                                     }
                                     CODouble	*d;
-                                    rsp.append( "response", employee = new COMap() );                                             // Create a new Map object to hold the response and add it to the response
-                                    employee->append( sPtr->c_str(), d = new CODouble( total ) );                                 // Add the employee hours to the map object in the response
-                                    d->Precision( 2 );                                                                            // Set the precision to 2 digits
+                                    /* Create a new Map object to hold the response and add it to the response */
+                                    rsp.append( "response", employee = new COMap() );
+                                    /* Add the employee hours to the map object in the response */
+                                    employee->append( sPtr->c_str(), d = new CODouble( total ) );
+                                    /* Set the precision to 2 digits */
+                                    d->Precision( 2 );
                                     delete info;
                                 } else {
                                     rsp.append( "response", "No employee given" );
@@ -177,17 +271,24 @@
                                 request.insert( 0, "Requested item not known: " );
                                 rsp.append( "response", new COString( request ) );
                             }
-                            reply = rsp.toCompactJsonString();                                                                    // create a compact string representation of the object (Note: the rsp object is deleted
-                                                                                                                                  // when it goes out of scope )
+                            /* 
+                             * create a compact string representation of the object (Note: the rsp object is deleted
+                             * when it goes out of scope )
+                             */
+                            reply = rsp.toCompactJsonString();
                         } else {
-                            reply = new std::string( "{\"from\":\"receiving\",\"response\":\"Invalid message request\"}");
+                            reply = new std::string( 
+                                    "{\"from\":\"receiving\",\"response\":\"Invalid message request\"}");
                         }
                         return reply;
                     }
                     int main( int argc, char **argv )
                     {
-                        std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",\"request\":\"hours\",\"people\":{\"Alice\":0,\"Fred\":0,\"Mary\":0,\"Sam\":0,\"Tom\":0.0}}" );
-//                      std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",\"request\":\"info\",\"employee\":\"Alice\"}" );
+                        std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\", 
+                             \"request\":\"hours\",\"people\":{\"Alice\":0,\"Fred\":0,\"Mary\":0, 
+                             \"Sam\":0,\"Tom\":0.0}}" );
+//                      std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",
+                             \"request\":\"info\",\"employee\":\"Alice\"}" );
                         std::string *hours = getHours( msg.c_str() );
                         if( hours )
                         {
