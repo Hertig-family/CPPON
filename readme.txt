@@ -121,7 +121,7 @@
                         COString        *sPtr;	        // Used as a temporary pointer to a COString object
                     	std::string     *reply = NULL;  // The reply string
                         /*
-                         * Start by making sure the message could be istatnitated as a COMap object and that it
+                         * Start by making sure the message could be instantiated as a COMap object and that it
                          * contains a string named "to" and equals "receiving";
                          */
                         if( CppON::isMap( &rqst ) && 
@@ -634,6 +634,9 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     COMap( std::map<std::string, CPPON *> &m ) - Create a copy of an existing map object containing
                     CPPON objects.
+                    
+                    COMap( const char *path, const char *file ) - If we know the file contains a JSON Object then
+                    we can instantiate the class objects given the path and filename.
 
                     = operator can be used to create a COMap from either a JSON string or another COMap object.
 
@@ -937,18 +940,18 @@ Dependent Libraries:The main dependent third party library that is required for 
                     STRUCT_LISTS *tsp = sysdata->getElement( "system.configuration.tsp" );
                     /* 
                      * Note: Could of used "system/configuration/tsp"
-		     * tsp should be considered a constent pointer, don't delete or modify it 
+		     * tsp should be considered a consent pointer, don't delete or modify it 
                      */
                     if( tsp )  // Make sure your request was successful. 
                     {
                         /*
-                         * Access to all "primitive" data types is a structure are controled by a single semaphore
+                         * Access to all "primitive" data types is a structure are controlled by a single semaphore
                          * therefore to improve performance and keep all related data updated together the
-                         * sepaphore can for any one item can be "captured" and held while updating all the items
+                         * semaphore can for any one item can be "captured" and held while updating all the items
                          * Access the data relative to the tsp item and pass "false" to avoid attempting to 
-                         * aquire the sepahore again
+                         * acquire the semaphore again
                          */
-                        sysdata->waitSem( "address", tsp );   				// lock the semephore
+                        sysdata->waitSem( "address", tsp );   				// lock the semaphore
                         sysdata->readString( "address", &address, false, tsp );         // read a string     
                         sysdata->readString( "amazon_number, amazonId, 18, false, tsp );// read into char buffer
                         sysdata->readBool( "installed", &hasTSP, false, tsp );          // read a boolean
@@ -986,7 +989,7 @@ Dependent Libraries:The main dependent third party library that is required for 
                     what you need.
 
      Semaphore use: Semaphores are a necessary evil of multi-threaded programming.  The protect data from
-                    corruption and reading invalid or un-synchronized data.  Especially strings.  However they are
+                    corruption and reading invalid or unsynchronized data.  Especially strings.  However they are
                     extremely dangerous if misused because the can cause threads to become permanently locked.
                     Although in its basic form the CObj can be used without every dealing with them, in which case
                     it will handle them safely without intervention.  Or access can be used in such a way as to

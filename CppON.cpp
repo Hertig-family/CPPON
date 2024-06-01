@@ -120,6 +120,8 @@
 #include <string>
 #include <vector>
 
+#define DIRECTORY_BIT 0x4000
+
 using namespace std;
 
 CppON *CppON::factory( CppON &jt )
@@ -2083,9 +2085,8 @@ COMap::COMap( COMap & mt ) : CppON(  MAP_CPPON_OBJ_TYPE )
     }
 };
 
-COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
+void COMap::parseData( const char *str )
 {
-    data = new map<string, CppON*>();
     if( str )
     {
         json_t        *root = NULL;
@@ -2093,7 +2094,6 @@ COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
         char          *np;
         int           cnt = strtol( str, &np, 0 );      // Check to see if it is a tnetstring (Starts with number)
         string        tabs( "" );
-
 
         if( np != str )
         {
@@ -2133,6 +2133,109 @@ COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
         }
         json_decref( root );
     }
+}
+
+COMap::COMap( const char *path, const char *file ): CppON( MAP_CPPON_OBJ_TYPE )
+{
+    data = new map<string, CppON*>();
+	struct stat     _stat;
+	std::string p( path );
+	FILE    *fp;
+
+	if( '/' != p.back() )
+	{
+		p += '/';
+	}
+	p.append( file );
+	if( ! stat( p.c_str(), &_stat ) && ! ( _stat.st_mode & DIRECTORY_BIT ) && (fp = fopen( p.c_str(), "r" ) ) )
+	{
+	    int     sz = 1024;
+	    char    *buf,*bSave;
+	    int     rd = 0;
+	    int     c;
+
+	    if( !( buf = (char *) malloc( sz ) ) )
+	    {
+	        fclose( fp );
+	        fprintf( stderr, "%s[%.4u]: Failed to allocate memory",__FILE__, __LINE__ );
+	    }
+	    while( EOF != ( c = fgetc( fp ) ) )
+	    {
+	        buf[ rd++ ] = ( char ) c;
+	        if( rd == sz )
+	        {
+	            if( !( buf = (char *) realloc( (void *) (bSave = buf ), sz += 512 ) ) )
+	            {
+	    	        fprintf( stderr, "%s[%.4u]: Failed to reallocate memory: %d bytes!",__FILE__, __LINE__, sz );
+	                free( bSave );
+	            }
+	        }
+	    }
+	    buf[ rd ] = '\0';
+	    fclose( fp );
+
+	    parseData( buf );
+
+	    free(buf );
+	} else {
+        fprintf( stderr, "%s[%.4u]: Failed to open JSON FILE \"%s\"",__FILE__, __LINE__, p.c_str() );
+	}
+
+}
+
+COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
+{
+    data = new map<string, CppON*>();
+#if 0
+    parseData( str );
+#else
+    if( str )
+    {
+        json_t        *root = NULL;
+        json_error_t  error;
+        char          *np;
+        int           cnt = strtol( str, &np, 0 );      // Check to see if it is a tnetstring (Starts with number)
+        string        tabs( "" );
+
+        if( np != str )
+        {
+            np++;
+            if( cnt && ',' == np[ cnt ] )
+            {
+                char *tmp = strdup( np );                // make a copy so it can be modified
+                tmp[ cnt ] = '\0';                      // remove the ',' at  the end of it
+                root = json_loads( tmp, 0, &error );    // load it as JSON
+                free( tmp );
+            } else if ( cnt ) {
+                root = json_loads( np, 0, &error );      // load it as JSON
+            }
+        }
+        if( !root )                                  // I guess it wasn't tnetstring so load it as JSON
+        {
+            if( !( str && str[ 0 ] ) )
+            {
+                fprintf( stderr, "%s[%d] Error: Attempt to parse zero length JSON string\n",__FILE__, __LINE__ );
+            }
+            root = json_loads( str, 0, &error );
+        }
+        if( ! root  )
+        {
+            fprintf( stderr, "%s[%d] Error: on line %d %s\n", __FILE__, __LINE__, error.line, error.text );
+            fprintf( stderr, "%s\n",str );
+        }
+        if( json_is_object( root ) )
+        {
+            const char *key;
+            json_t   *value;
+            json_object_foreach( root, key, value )
+            {
+                //  order.push_back( string( key ) );
+                this->append( key, parseJson( value, tabs ) );
+            }
+        }
+        json_decref( root );
+    }
+#endif
 }
 
 COMap *COMap::operator=( const char *str )

@@ -567,6 +567,7 @@ public:
 											COMap( COMap *mt );
 											// cppcheck-suppress noExplicitConstructor
 											COMap( const char *str );
+											COMap( const char *path, const char *file );
 											COMap( ) : CppON(  MAP_CPPON_OBJ_TYPE ) { data = new std::map<std::string, CppON*>(); }
 											// cppcheck-suppress noExplicitConstructor
 											COMap( std::map < std::string, CppON *> &m ) : CppON( MAP_CPPON_OBJ_TYPE ){ data = new std::map<std::string, CppON *>( m ); }
@@ -622,6 +623,8 @@ std::map<std::string,CppON*>::iterator		end() { return ((std::map< std::string, 
 			COMap							*diff( COMap &newObj, const char *name = NULL);
 			void							upDate( COMap *map, const char *name );
 			void							merge( COMap *map, const char *name );
+private:
+			void							parseData( const char *str );
 };
 
 class COArray : public CppON
