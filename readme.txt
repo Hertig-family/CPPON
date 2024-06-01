@@ -18,12 +18,12 @@
                     “container” classes which are implemented as a “std::map” and a “std::vector” (complete with 
                     iterators) can hold any of the object types.
 
-                    Any valid JSON string or file can be parsed into a complete data structure with a single command 
-                    without the need to even know the messages contents. The system also works with TNetStrings (and 
-                    certain XML if compiled with the option to do so.)  Of course the structure can also be created 
-                    problematically either a string or built up element by element in the code. (Note: When using 
-                    TNetStrings or XML binary is supported but caution is advised when/if then attempting to convert 
-                    it to JSON)
+                    Any valid JSON string or file can be parsed into a complete data structure with a single
+                    command without the need to even know the messages contents. The system also works with
+                    TNetStrings (and certain XML if compiled with the option to do so.)  Of course the structure
+                    can also be created problematically either a string or built up element by element in the code.
+                    (Note: When using TNetStrings or XML binary is supported but caution is advised when/if then
+                    attempting to convert it to JSON)
 
                     At any point a single method can be called to create a string or file from the hierarchy in 
                     either a verbose, human readable form or a compact (sans white space) form.
@@ -37,11 +37,12 @@
                     XML was pretty much abandoned. (It is still available but requires additional dependent 
                     libraries.)
 
-                    Soon the library because valuable in another unforeseen way.  It became a way to implement “Soft 
-                    Structures” in C++:  Internal data structures can now be defined by JSON configuration files and
-                    instantiated at run time.  While obvious not as “high performance” as hard-coded data structures 
-                    and Class structures, in the embedded equipment world where configurations often change being 
-                    able to define the internal data structures from a configuration file has some real advantages.
+                    Soon the library because valuable in another unforeseen way.  It became a way to implement
+                    “Soft Structures” in C++:  Internal data structures can now be defined by JSON configuration
+                    files and instantiated at run time.  While obvious not as “high performance” as hard-coded data
+                    structures and Class structures, in the embedded equipment world where configurations often
+                    change being able to define the internal data structures from a configuration file has some
+                    real advantages.
                     
                     Soon whole systems were being designed around the concept of “soft structures” which lead to a 
                     problem.  The class structure could be instantiated and in a single application but when
@@ -287,7 +288,7 @@
                         std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\", 
                              \"request\":\"hours\",\"people\":{\"Alice\":0,\"Fred\":0,\"Mary\":0, 
                              \"Sam\":0,\"Tom\":0.0}}" );
-//                      std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",
+                    //  std::string msg( "{\"to\":\"receiving\",\"from\":\"accounting\",
                              \"request\":\"info\",\"employee\":\"Alice\"}" );
                         std::string *hours = getHours( msg.c_str() );
                         if( hours )
@@ -685,7 +686,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     COArray the delimiter is a colon (:) followed by a number which is an index.
 
                     findElement( const char *str ) - Find and return a pointer to an element by looking for the
-                    name.  In this case the name is not considered a “path” and must be equal to the name in the map.
+                    name.  In this case the name is not considered a “path” and must be equal to the name in the
+                    map.
 
                     findElement( const std::string &str), findElement( const char *str ), findElement( std::string
                     *s ) - Same as the findElement( const char *str) method.
@@ -821,7 +823,8 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     However this comes at a cost:  Once created, it's structure if fixed and cannot be changed.
                     Strings have a fixed maximum length.  Of course another great thing about it is the data is
-                    stored in system shared memory and is only be deleted by a reboot or performing the shared memory
+                    stored in system shared memory and is only be deleted by a reboot or performing the shared
+                    memory
                     library call: shm_unlink( sm_name );  Where sm_name is the name of the SCppObj. (But the system
                     will only delete the shared memory segment when all references to it are closed.)  All
                     applications on the system can access it without fear of thread collisions or corruption.  This
@@ -833,7 +836,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     builds an internal network of pointers called "STRUCT_LISTS" which are references to all objects
                     and where they are stored in memory.  These Object contain type information and pointers to all
                     contents and data that the variable accesses.  You can get a reference to one of these objects
-                    with the "getElement" request but should NEVER directly modify the contents one of these objects.
+                    with the "getElement" request but should NEVER directly modify the contents one of these
+                    objects.
  
                     Each data type and integer sizes have their own "accessors" to get and update data in the
                     structure.  There are three types of accessors,  An example of each is:
@@ -965,9 +969,9 @@ Dependent Libraries:The main dependent third party library that is required for 
 
      Semaphore use: Semaphores are a necessary evil of multi-threaded programming.  The protect data from corruption
                     and reading invalid or un-synchronized data.  Especially strings.  However they are extremely
-                    dangerous if misused because the can cause threads to become permanently locked.  Although in its
-                    basic form the CObj can be used without every dealing with them, in which case it will handle
-                    them safely without intervention.  Or access can be used in such a way as to ignore the
+                    dangerous if misused because the can cause threads to become permanently locked.  Although in
+                    its basic form the CObj can be used without every dealing with them, in which case it will
+                    handle them safely without intervention.  Or access can be used in such a way as to ignore the
                     semaphores on a call by call basis.  Considerable performance and safety can be gained by a
                     little management on the part of the programmer.  To avoid problems there are a few basic rules
                     that must always be followed when dealing with them:
