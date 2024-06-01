@@ -302,66 +302,87 @@
 
    Class Libraries: There are three shared class libraries as described below:
 
-             CPPON: This is the C++ Object Notation library that represents a JSON Message as a C++ class hierarchy.  It consists of a base class, two
+             CPPON: This is the C++ Object Notation library that represents a JSON Message as a C++ class hierarchy.
+                    It consists of a base class, two
                     container classes and five base object classes:
-                         • C++ Object Notation Object (CppON ) - The base class from which all other classes are derived. It instantiates common methods 
-                           (which are often overridden) that all objects are required to have.  It enables container classes to use the base class as the 
-                           storage type.  It can be instantiated from another CppON to make a copy, created programmatic-ally, parsed from a C String, a 
-                           std::string, a CSV C string a TSV C string, a JSON File, an XML file or a TNetString.
-                        • C Object Map (COMap) -  This object is based on the std::Map object and is of the type std::map<std::string, CppON *>.  Obviously,
-                          it is the fundamental container class that most JSON messages are based on. Besides being instantiated as a result of one of the
-                          base class methods, it can be explicitly instantiated from another COMap, a JSON string representing a map or a reference to a 
-                          std::map of the type <std::string, CppON *>.
-                        • C Object Array (COArray) – This object is based on the std::Vector object and is of the type std::vector<CppON *>. It implements
-                          the JSON Array type and is used to hold a list of objects, including other container classes.  Note that unlike C type Arrays the
-                          objects don’t have to be of the same type.  Like the COMap there is a begin() and end() method which returns an iterator pointer
-                          which can be used like in any vector to iterate through all the object in the container.  Likewise the at( unsigned int) function
-                          can be used to retrieve an element based on an index.
-                        • C Object Integer(COInterger) – This class is used to represent whole numbers which can be of size 8, 16, 32, or 64 bits in length.
-                        • C Object Double (CODouble) – This class represents all floating point numbers.  Internally all floating point numbers are stored
-                          as doubles but they can be retrieved as either a float value or a double value.
-                        • C Object Boolean (COBoolean) – This class represents a boolean value of true or false, 1 or zero.
-                        • C Object String (COString) – While the name implies correctly that this object holds a array of characters it can also hold an
-                          array of binary data and/or base64 encoded binary data.  However, its main function is to save character strings.
-                        • C Null Object (CONull) – This is a special case of an object.  It is basically a place holder for an undefined CPPON value.
+                         • C++ Object Notation Object (CppON ) - The base class from which all other classes are
+                           derived. It instantiates common methods (which are often overridden) that all objects are
+                           required to have.  It enables container classes to use the base class as the storage
+                           type.  It can be instantiated from another CppON to make a copy, created programmatic-
+                           ally, parsed from a C String, a std::string, a CSV C string a TSV C string, a JSON File,
+                           an XML file or a TNetString.
+                        • C Object Map (COMap) -  This object is based on the std::Map object and is of the type
+                          std::map<std::string, CppON *>.  Obviously, it is the fundamental container class that
+                          most JSON messages are based on. Besides being instantiated as a result of one of the
+                          base class methods, it can be explicitly instantiated from another COMap, a JSON string
+                          representing a map or a reference to a std::map of the type <std::string, CppON *>.
+                        • C Object Array (COArray) – This object is based on the std::Vector object and is of the
+                          type std::vector<CppON *>. It implements the JSON Array type and is used to hold a list 
+                          of objects, including other container classes.  Note that unlike C type Arrays the objects
+                          don’t have to be of the same type.  Like the COMap there is a begin() and end() method
+                          which returns an iterator pointer which can be used like in any vector to iterate through
+                          all the object in the container.  Likewise the at( unsigned int) function can be used to
+                          retrieve an element based on an index.
+                        • C Object Integer(COInterger) – This class is used to represent whole numbers which can be
+                          of size 8, 16, 32, or 64 bits in length.
+                        • C Object Double (CODouble) – This class represents all floating point numbers.  Internally
+                          all floating point numbers are stored as doubles but they can be retrieved as either a
+                          float value or a double value.
+                        • C Object Boolean (COBoolean) – This class represents a boolean value of true or false, one
+                          or zero.
+                        • C Object String (COString) – While the name implies correctly that this object holds a
+                          array of characters it can also hold an array of binary data and/or base64 encoded binary
+                          data.  However, its main function is to save character strings.
+                        • C Null Object (CONull) – This is a special case of an object.  It is basically a place
+                          holder for an undefined CPPON value.
 
-           SCppObj: This is companion class that is dependent on the CppON class.  It is instantiated directly from a COMap object or a C String that
-                    represents a path to a file which contains a string representation of one.  Externally, this class looks much like a COMap class but
-                    it exists in system shared memory and has built in protection to be thread safe. (It does however have a mechanism for allowing an
-                    application to control the data access on its own to insure that related data is always updated and retrieved as a block.  This data
-                    structure is always defined JSON file/string with very specific rules for defining each element in the structure.  It’s an important
-                    distinction that the JSON configuration file defines the data structure. The data structure is not a copy of the JSON file.
+           SCppObj: This is companion class that is dependent on the CppON class.  It is instantiated directly from
+                    a COMap object or a C String that represents a path to a file which contains a string
+                    representation of one.  Externally, this class looks much like a COMap class but it exists in
+                    system shared memory and has built in protection to be thread safe. (It does however have a
+                    mechanism for allowing an application to control the data access on its own to insure that
+                    related data is always updated and retrieved as a block.  This data structure is always defined
+                    JSON file/string with very specific rules for defining each element in the structure.  It’s an 
+                    important distinction that the JSON configuration file defines the data structure. The data
+                    structure is not a copy of the JSON file.
 
-                    The constructor used to instantiate this class requires both a description JSON string or file path and a segment name string. (The
-                    segment name is just a string that is used to distinguish between different SCppObj Objects in shared memory.  The constructor can 
-                    also be passed a pointer to a boolean values which will be set true if the segment was previously configured/initialized false if 
+                    The constructor used to instantiate this class requires both a description JSON string or file
+                    path and a segment name string. (The segment name is just a string that is used to distinguish
+                    between different SCppObj Objects in shared memory.  The constructor can also be passed a
+                    pointer to a boolean values which will be set true if the segment was previously configured / 
+                    initialized false if this is the first time.  Or, it could be passed a “callback” function that
+                    will be caused to initialize the structure after it is created.
+
+                    The idea here is that all applications when they start will substantialize the object.  If it
+                    doesn’t already exist then the first one to attempt to access it will create it and then
+                    initialize it, blocking all others until it is done.
+
+                    The description JSON data contains default values for all the data but in some cases additional
+                    initialization may be required. Thus the callback function.
                     
-                    this is the first time.  Or, it could be passed a “callback” function that will be caused to initialize the structure after it is 
-                    created.
+      LocalCppObj:  The Local C++ Object is the last of the companion classes and it requires both the SCppObj class
+                    and the CppON class.  In fact it requires that a pointer to a SCppObj object be passed to the
+                    constructor.  It uses that pointer to access the data.  The calling software can get pointers to
+                    sections of the data to request a response object of anything that changed since the last
+                    request.  That object could be as restricted as a single base object or as broad as the whole
+                    data structure. (Although one would hope it would be something somewhere in the middle.) 
 
-                    The idea here is that all applications when they start will substantialize the object.  If it doesn’t already exist then the first
-                    one to attempt to access it will create it and then initialize it, blocking all others until it is done.
+Dependent Libraries:The main dependent third party library that is required for this class family is the Jansson
+                    library used for parsing JSON strings https://github.com/akheron/jansson.  Include the jansson
+                    library in your program build
 
-                    The description JSON data contains default values for all the data but in some cases additional initialization may be required. Thus 
-                    the callback function.
-                    
-      LocalCppObj:  The Local C++ Object is the last of the companion classes and it requires both the SCppObj class and the CppON class.  In fact it 
-                    requires that a pointer to a SCppObj object be passed to the constructor.  It uses that pointer to access the data.  The calling
-                    software can get pointers to sections of the data to request a response object of anything that changed since the last request.  
-                    That object could be as restricted as a single base object or as broad as the whole data structure. (Although one would hope it 
-                    would be something somewhere in the middle.) 
+                    The other libraries that are required are almost always available automatically with your
+                    distribution and are std::string, std::vector and std::map.
 
-Dependent Libraries:The main dependent third party library that is required for this class family is the Jansson library used for parsing JSON strings
-                    https://github.com/akheron/jansson.  Include the jansson library in your program build
+                    Finally, if you want to use XML with the libraries you will need to install libxml2-dev and then
+                    find the line “#define HAS_XML 0” and the CppON.hpp file and set it to 1.  Add libxml2 as a
+                    library in your build.
 
-                    The other libraries that are required are almost always available automatically with your distribution and are std::string, 
-                    std::vector and std::map.
-
-                    Finally, if you want to use XML with the libraries you will need to install libxml2-dev and then find the line “#define HAS_XML 0” and 
-                    the CppON.hpp file and set it to 1.  Add libxml2 as a library in your build.
- Class Definitions: All the class object in the CPPON library are derived from the CppON base object and many of the methods are overridden most of them 
-                    will give the correct results when cast to the base class as they are when retrieved from one of the container classes.  However, it
-                    is recommended that upon obtaining a pointer to a CppON object that it be cast to the correct type when operating on/with it.
+ Class Definitions: All the class object in the CPPON library are derived from the CppON base object and many of the
+                    methods are overridden most of them will give the correct results when cast to the base class as
+                    they are when retrieved from one of the container classes.  However, it is recommended that upon
+                    obtaining a pointer to a CppON object that it be cast to the correct type when operating on/with
+                    it.
 
                     CppON( cppON &jt ) – Create a copy of another CppON object by references.
 
@@ -369,40 +390,44 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     CppON( CppONType typ=UNKNOWN_CPPON_OBJ_TYPE ); Create an empty CppON of a given type.
 
-                    CppON( data = NULL; type=UNKNOWN_CPPON_OBJ_TYPE, precision=-1 ) – Create a CppON object of a given type while passing it the data 
-                    objet. (Care should be used when doing this.)
+                    CppON( data = NULL; type=UNKNOWN_CPPON_OBJ_TYPE, precision=-1 ) – Create a CppON object of a
+                    given type while passing it the data objet. (Care should be used when doing this.)
 
-                    factory( CppON &jt ) - Static function used to create a copy of a CppON object based on a reference.
+                    factory( CppON &jt ) - Static function used to create a copy of a CppON object based on a
+                    reference.
 
-                    factory( CppON *jt ) - Static function used to create a copy of a CppON object based on a pointer to an object.
+                    factory( CppON *jt ) - Static function used to create a copy of a CppON object based on a
+                    pointer to an object.
 
                     type() - return the type or class name of the object.
 
-                    size() - return the “size” of the value.  This is a virtual function and may be the size of the storage space, the number of 
-                    characters or the number of items in a container.
+                    size() - return the “size” of the value.  This is a virtual function and may be the size of the
+                    storage space, the number of characters or the number of items in a container.
 
-                    dump( FILE *fp ) - This is a virtual function that is used to write the contents of the object to a file. It is written in a
-                    verbose, human readable way.
+                    dump( FILE *fp ) - This is a virtual function that is used to write the contents of the object
+                    to a file. It is written in a verbose, human readable way.
 
-                    cdump( FILE *fp ) - this is a virtual function that does a “compact” or compressed dump of an object to a file without unnecessary
-                    white spaces characters in it.
+                    cdump( FILE *fp ) - this is a virtual function that does a “compact” or compressed dump of an
+                    object to a file without unnecessary white spaces characters in it.
 
-                    toCompactJsonString() - This is much like the cdump() method but returns a pointer to an allocated std::string object which must be
-                    deleted using the delete command.
+                    toCompactJsonString() - This is much like the cdump() method but returns a pointer to an
+                    allocated std::string object which must be deleted using the delete command.
 
                     getData() - Returns a pointer to the allocated data area for the object.
 
-                    toDouble() - Attempts to convert the data to a double value and return it.  If it isn’t possible the value of -999999999.123 is 
-                    returned.
+                    toDouble() - Attempts to convert the data to a double value and return it.  If it isn’t possible
+                    the value of -999999999.123 is returned.
 
-                    toInteger() - Attempts to convert the data to an integer value.  If it isn’t possible then zero is returned.
+                    toInteger() - Attempts to convert the data to an integer value.  If it isn’t possible then zero
+                    is returned.
 
-                    toBoolean() - Return a boolean value of true if the value is anything but zero or false or is the ford “true” in the case of a 
-                    string.
+                    toBoolean() - Return a boolean value of true if the value is anything but zero or false or is
+                    the ford “true” in the case of a string.
  
-                    isNumber() - Returns true if the object type is a CODouble, COInteger or COBoolean
+                    isNumber() - Returns true if the object type is a CODouble, COInteger or COBoolean.
   
-                    isNumber( CPPON * ) - Static method that returns true if the given object type is a CODouble, COInteger or COBoolean.
+                    isNumber( CPPON * ) - Static method that returns true if the given object type is a CODouble,
+                    COInteger or COBoolean.
   
                     isMap() - Returns true if the object type is a COMap.
          
@@ -428,47 +453,56 @@ Dependent Libraries:The main dependent third party library that is required for 
  
                     isDouble( CPPON * ) - Static method that returns true if the given object type is a CODouble.
 
-                    isObj( CPPON * ) - Static function that returns true if the given object is defined as a specific type
+                    isObj( CPPON * ) - Static function that returns true if the given object is defined as a
+                    specific type.
  
                     == - Returns true if the two values are the same.
 
                     != - Returns true if the two values are not the same.
 
-                    diff( CppON &obj, const char *name ) - Returns a CppON containing the differences between the object and the given one.  Good for
-                    finding changes in a map or an array.
+                    diff( CppON &obj, const char *name ) - Returns a CppON containing the differences between the
+                    object and the given one.  Good for finding changes in a map or an array.
 
-                    c_str() - This returns a const char pointer to a C string representing the data.  This could be just the conversion of a number to
-                    a string or in the case of a COMap or COArray it could be the complex JSON string.
+                    c_str() - This returns a const char pointer to a C string representing the data.  This could be
+                    just the conversion of a number to a string or in the case of a COMap or COArray it could be the
+                    complex JSON string.
 
                     readObj( FILE *fp ) - read the file and attempt to parse the contents into a CPPON object.
 
-                    parse( const char *str, char *rstr ) - Parse a TNetString and attempt to create a CPPON object. The remainder of the string (Not 
-                    parsed) is returned pointed to by rstr. Caution is advised as TnetStrings are often used to bass binary data that is invalid in JSON.
+                    parse( const char *str, char *rstr ) - Parse a TNetString and attempt to create a CPPON object.
+                    The remainder of the string (Not parsed) is returned pointed to by rstr. Caution is advised as
+                    TnetStrings are often used to bass binary data that is invalid in JSON.
 
-                    parseJson( const char *str ) - This function is used to attempt to crate a CPPON object from a C string.  It will determine the type
-                    of object based on the first not white space character.
+                    parseJson( const char *str ) - This function is used to attempt to crate a CPPON object from a 
+                    C string.  It will determine the type of object based on the first not white space character.
 
-                    parseJson( json_t *ob, std::string &tabs ) - This is actually a low level function used to parse JSON data using the jansson library.
-                    Users should ignore it.
+                    parseJson( json_t *ob, std::string &tabs ) - This is actually a low level function used to parse
+                    JSON data using the jansson library. Users should ignore it.
 
-                    parseXML( const char *str ) – This function (available if the HAS_XML flag is set) is used to attempt to create a CPPON object from
-                    a string containing XML.
+                    parseXML( const char *str ) – This function (available if the HAS_XML flag is set) is used to
+                    attempt to create a CPPON object from a string containing XML.
 
-                    parseCSV( const char *file ) - This function is used to attempt to parse data in CSV file pointed to by file into a COArray.  
+                    parseCSV( const char *file ) - This function is used to attempt to parse data in CSV file
+                    pointed to by file into a COArray.  
  
-                    parseTSV( const char *file ) - This function is used to attempt to parse data in TSV file pointed to by file into a COArray.  
+                    parseTSV( const char *file ) - This function is used to attempt to parse data in TSV file
+                    pointed to by file into a COArray.  
 
-                    parseJsonFile( const char *file ) - This function is used to attempt to parse data in file pointed to by file into a CPPON object.  
+                    parseJsonFile( const char *file ) - This function is used to attempt to parse data in file
+                    pointed to by file into a CPPON object.  
 
-                    GuessDataType( const char *str ) - Given a sting representing an unknown JSON data type try and parse it ito a CPPON Object.
+                    GuessDataType( const char *str ) - Given a sting representing an unknown JSON data type try and
+                    parse it ito a CPPON Object.
  
-         COInteger: The COInteger class can represent whole values of different sizes.  8, 16, 32, or 64 bits.  While it overrides many of the methods in
-                    the base class, while more efficient the operation remains the same. However there are a few methods added specifically for this class.
+         COInteger: The COInteger class can represent whole values of different sizes.  8, 16, 32, or 64 bits.
+                    While it overrides many of the methods in the base class, while more efficient the operation
+                    remains the same. However there are a few methods added specifically for this class.
 
-                    COInteger( X ) - Constructors passing different types of values.  Char, short, int, long, long long types define the size of the
-                    COInteger  as well as set the value of the object.
+                    COInteger( X ) - Constructors passing different types of values.  Char, short, int, long, 
+                    long long types define the size of the COInteger  as well as set the value of the object.
 
-                    = operator is used to set the size and value of the COInteger based on the data type and value of the number it is set to.
+                    = operator is used to set the size and value of the COInteger based on the data type and value
+                    of the number it is set to.
 
                     longValue() - Returns the value, no matter what size it is, as a long long.
 
@@ -478,16 +512,21 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     intValue() - Returns the value, no matter what size it is, truncated to a 32 bit number.
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the value. (Should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
+                    value. (Should to be deleted)
 
-                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of the value. (Should to be deleted)
+                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of
+                    the value. (Should to be deleted)
 
-          CODouble: Used to represent floating point numbers, it uses the “precision” parameter to determine the number of significant digits to 
-                    represent when converted to a string.  The default precision is ten digits.
+          CODouble: Used to represent floating point numbers, it uses the “precision” parameter to determine the
+                    number of significant digits to represent when converted to a string.  The default precision is
+                    ten digits.
 
-                    CODouble( double d = 0.0 ) - Has the additional constructor which allows it to be constructed from a double precision number.
+                    CODouble( double d = 0.0 ) - Has the additional constructor which allows it to be constructed
+                    from a double precision number.
 
-                    Precision( unsigned char n ) - Allows the precision to be set (if n is given ) and returned as an unsigned character.
+                    Precision( unsigned char n ) - Allows the precision to be set (if n is given ) and returned as
+                    an unsigned character.
 
                     = operator allows the value to be set to a given double value or the value of a CODouble.
 
@@ -497,158 +536,194 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     floatValue() - Returns the value as a single precision float number.  
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the value. (Should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
+                    value. (Should to be deleted)
 
-                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of the value. (Should to be deleted)
+                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of
+                    the value. (Should to be deleted)
 
-            CONull: While the CONull class exists it is only a “transitional” object and doesn’t provide any purpose except for completeness.
+            CONull: While the CONull class exists it is only a “transitional” object and doesn’t provide any purpose
+                    except for completeness.
 
          COBoolean: This class represents boolean values of true and false.
 
-                    = operator provides a number of ways the false can be set from either another COBoolean or a c++ bool value.  And, while might 
-                    be good to add the ability to set it to a zero or non zero number, this has not been done.
+                    = operator provides a number of ways the false can be set from either another COBoolean or a c++
+                    bool value.  And, while might be good to add the ability to set it to a zero or non zero number,
+                    this has not been done.
 
                     Value() - The value function returns a boolean value of true or false. 
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the value. (Should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
+                    value. (Should to be deleted)
 
-                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of the value. (Should to be deleted)
+                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of
+                    the value. (Should to be deleted)
 
-          COString: This class is implement as a std::string object.  Unlike JSON strings it allows binary data to be stored in in them.
+          COString: This class is implement as a std::string object.  Unlike JSON strings it allows binary data to
+                    be stored in in them.
  
-                    COString( const char *st = "", bool base64 = false ) - This constructor is used to construct a COString from a const char pointer.
-                    This pointer
-                    can be either a normal C string or a base64 encoded C string which will be decoded before storing it.  
+                    COString( const char *st = "", bool base64 = false ) - This constructor is used to construct a
+                    COString from a const char pointer.  This pointer can be either a normal C string or a base64
+                    encoded C string which will be decoded before storing it.  
 
-                    COString( std::string st, bool base64 = false ) - This constructor is used to construct a COString from a std::string object.  The
-                    std::string can contain either normal ASCII characters or be a base64 included string of binary data which will be decoded before
-                    storage.
+                    COString( std::string st, bool base64 = false ) - This constructor is used to construct a
+                    COString from a std::string object.  The std::string can contain either normal ASCII characters
+                    or be a base64 included string of binary data which will be decoded before storage.
 
-                    COString( uint64_t val, bool hex = true ) - This constructor is used to convert a 64 bit number into a COString object.  It can be
-                    stored in decimal format or as a Hex representation.
+                    COString( uint64_t val, bool hex = true ) - This constructor is used to convert a 64 bit number
+                    into a COString object.  It can be stored in decimal format or as a Hex representation.
 
-                    COString( uint32_t val, bool hex = true ) - This constructor is used to convert a 32 bit number into a COString object.  It can be
-                    stored in decimal format or as a Hex representation.
+                    COString( uint32_t val, bool hex = true ) - This constructor is used to convert a 32 bit number
+                    into a COString object.  It can be stored in decimal format or as a Hex representation.
 
-                    Base64Decode( const char *tmp, unsigned int sz, unsigned int &len, char *out = NULL ) - This function is more or less a generic 
-                    function used to convert a Base 64 encoded string back into binary data.  It is used by the class and is made available to other
-                    applications.  “tmp” is a pointer to the base 64 data and sz is the size of the data.  “out” if set must point to a buffer large
-                    enough to hold the data ( sz + 3 should work).  If it is NULL then space will be allocated as an array of characters with the new
-                    operator. “len” will be set to the number of bytes in the output string.  Which will be null terminated even though it is binary
-                    data?
+                    Base64Decode( const char *tmp, unsigned int sz, unsigned int &len, char *out = NULL ) - This
+                    function is more or less a generic function used to convert a Base 64 encoded string back into
+                    binary data.  It is used by the class and is made available to other applications.  “tmp” is a
+                    pointer to the base 64 data and sz is the size of the data.  “out” if set must point to a buffer
+                    large enough to hold the data ( sz + 3 should work).  If it is NULL then space will be allocated
+                    as an array of characters with the new operator. “len” will be set to the number of bytes in the
+                    output string.  Which will be null terminated even though it is binary data?
 
-                    = operator works for setting the value to both C strings and std::strings but also integers of type uint64_t, uint32_t, and int.
+                    = operator works for setting the value to both C strings and std::strings but also integers of
+                    type uint64_t, uint32_t, and int.
 
-                    toBase64JsonString( const char *data, unsigned int len ) - static member function to base64 Encode binary data int a JSON string
-                    where data is a pointer to the binary data and len is the number of characters.
+                    toBase64JsonString( const char *data, unsigned int len ) - static member function to base64
+                    Encode binary data int a JSON string where data is a pointer to the binary data and len is the
+                    number of characters.
 
-                    ToBase64JsonString() - method to convert a COString that holds binary data into a JSON string of base64 characters.
+                    ToBase64JsonString() - method to convert a COString that holds binary data into a JSON string of
+                    base64 characters.
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the value. (Should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
+                    value. (Should to be deleted)
 
-                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of the value. (Should to be deleted)
+                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of
+                    the value. (Should to be deleted)
 
-             COMap: This is the main container class which usually holds all other instances of the message.  It is implemented as a 
-                    std::map<std::string, CPPON *>.
+             COMap: This is the main container class which usually holds all other instances of the message.  It is
+                    implemented as a std::map<std::string, CPPON *>.
 
-                    As such it has a number of functions dedicated to iterating through the items in the map as well as the ability to search add
-                    and remove items from from the map.  It is important to note that all objects contained in the map are “owned” by the map.  This
-                    means that when the object is destroyed all object contained by the map will also be destroyed.
+                    As such it has a number of functions dedicated to iterating through the items in the map as well
+                    as the ability to search add and remove items from from the map.  It is important to note that
+                    all objects contained in the map are “owned” by the map.  This means that when the object is
+                    destroyed all object contained by the map will also be destroyed.
           
-                    It should also be understood that when a COMap object is created either by the use of a JSON string or by a JSON Object all object
-                    contained will also be created.  In this way a very complicated JSON string or object can be created with a single constructor.
+                    It should also be understood that when a COMap object is created either by the use of a JSON
+                    string or by a JSON Object all object contained will also be created.  In this way a very
+                    complicated JSON string or object can be created with a single constructor.
 
-                    COMap( const char *str ) - Create a class hierarchy based on a JSON string representing a map and child objects.
+                    COMap( const char *str ) - Create a class hierarchy based on a JSON string representing a map
+                    and child objects.
 
-                    COMap( std::map<std::string, CPPON *> &m ) - Create a copy of an existing map object containing CPPON objects.
+                    COMap( std::map<std::string, CPPON *> &m ) - Create a copy of an existing map object containing
+                    CPPON objects.
 
                     = operator can be used to create a COMap from either a JSON string or another COMap object.
 
-                    getKeys() - Will return a pointer to a vector of type std::vector<std::string> which contains all the keys in the map. (Do NOT
-                    delete or modify the returned vector.  The vector is actually part of the class and is used to key track of the order in which
-                    the elements are added.
+                    getKeys() - Will return a pointer to a vector of type std::vector<std::string> which contains
+                    all the keys in the map. (Do NOT delete or modify the returned vector.  The vector is actually
+                    part of the class and is used to key track of the order in which the elements are added.
 
-                    getValues() - Will return a pointer to a vector of type std::vector<CppON *> representing the values stored in the Object. Don’t
-                    delete the objects in in the vector but the vector itself is created by the call and must be deleted.
+                    getValues() - Will return a pointer to a vector of type std::vector<CppON *> representing the
+                    values stored in the Object. Don’t delete the objects in in the vector but the vector itself is
+                    created by the call and must be deleted.
  
-                    value() - returns a pointer to a std::map< std::string, CppON *>.  This is the actual map that the object is built on. Do not add
-                    or delete object directly from the map.
+                    value() - returns a pointer to a std::map< std::string, CppON *>.  This is the actual map that
+                    the object is built on. Do not add or delete object directly from the map.
  
-                    begin() - returns an iterator of type std::map<std::string,CppON*>::iterator which is pointing to the first element in the map.
-                    This iterator can be used to index through the child objects in the map.
+                    begin() - returns an iterator of type std::map<std::string,CppON*>::iterator which is pointing
+                    to the first element in the map.  This iterator can be used to index through the child objects
+                    in the map.
  
-                    end() - returns an iterator of type std::map<std::string, CppON *>::iterator which points to the first object after the end of
-                    the map which can be used as a comparisons to the one return from the begin() function to know that the all values have be indexed
-                    through.
+                    end() - returns an iterator of type std::map<std::string, CppON *>::iterator which points to the
+                    first object after the end of the map which can be used as a comparisons to the one return from
+                    the begin() function to know that the all values have be indexed through.
 
-                    extract( const char *name ) - Search for a element that string matches the “name”.  If found remove it and return a pointer to it.
-                    Note, as it has been removed from the COMap, the code is responsible for deleting it.
+                    extract( const char *name ) - Search for a element that string matches the “name”.  If found
+                    remove it and return a pointer to it.  Note, as it has been removed from the COMap, the code is
+                    responsible for deleting it.
 
-                    removeVal( std::string val ) - This method looks for an object by the given name.  If found it is removed and deleted.
+                    removeVal( std::string val ) - This method looks for an object by the given name.  If found it
+                    is removed and deleted.
 
-                    replaceObj( std::string name, CppON *obj ) - Look for an object by the given name.  If found it is deleted and replaced by the
-                    given object.
+                    replaceObj( std::string name, CppON *obj ) - Look for an object by the given name.  If found it
+                    is deleted and replaced by the given object.
 
                     clear() - Remove and delete all objects from the COMap.
                     
-                    append( std::string key, CppON *n ) - This is the typical function to add a new object to the COMap object.  The name and object
-                    to add are passed to the method.
+                    append( std::string key, CppON *n ) - This is the typical function to add a new object to the
+                    COMap object.  The name and object to add are passed to the method.
  
-                    append( std::string key, std::string value ) - Create a new COString object from the value and add it to the COMap object.
+                    append( std::string key, std::string value ) - Create a new COString object from the value and
+                    add it to the COMap object.
  
-                    append( std::string key, const char *value ) - Create a new COString object from the value and add it to the COMap object.
+                    append( std::string key, const char *value ) - Create a new COString object from the value and
+                    add it to the COMap object.
  
-                    append( std::string key, double value ) - Create a new CODouble object from the value and add it to the COMap object.
+                    append( std::string key, double value ) - Create a new CODouble object from the value and add it
+                    to the COMap object.
 
-                    append( std::string key, long long value ) - Create a new COInteger object from the value and add it to the COMap object.
+                    append( std::string key, long long value ) - Create a new COInteger object from the value and
+                    add it to the COMap object.
 
-                    append( std::string key, int value ) - Create a new COInteger object from the value and add it to the COMap object.
+                    append( std::string key, int value ) - Create a new COInteger object from the value and add it
+                    to the COMap object.
 
-
-                    append( std::string key, bool value ) - Create a new COBoolean object from the value and add it to the COMap object.
+                    append( std::string key, bool value ) - Create a new COBoolean object from the value and add it
+                    to the COMap object.
 
                     append( std::string key ) - Create a new CONull object and add it to the COMap object.
 
-                    findEqual( const char *name, CppON *) - Look for an object with the name and equal to a give Object.
+                    findEqual( const char *name, CppON *) - Look for an object with the name and equal to a give
+                    Object.
 
-                    findElement( const char *str ) - Find and return a pointer to an element by looking for the name.  Note that if str has a period (.)
-                    or a forward slash (/) in it, it is considered a “path” with the dot or slash being a delimiter.  And the name is considered the
-                    first segment before the delimiter. If the item is found and it is a COMap type the first segment is removed from the str and the
-                    shortened name is passed to to the new object to be found.  If the item is an COArray the delimiter is a colon (:) followed by a
-                    number which is an index.
+                    findElement( const char *str ) - Find and return a pointer to an element by looking for the
+                    name.  Note that if str has a period (.) or a forward slash (/) in it, it is considered a “path”
+                    with the dot or slash being a delimiter.  And the name is considered the first segment before
+                    the delimiter. If the item is found and it is a COMap type the first segment is removed from the
+                    str and the shortened name is passed to to the new object to be found.  If the item is an
+                    COArray the delimiter is a colon (:) followed by a number which is an index.
 
-                    findElement( const char *str ) - Find and return a pointer to an element by looking for the name.  In this case the name is not
-                    considered a “path” and must be equal to the name in the map.
+                    findElement( const char *str ) - Find and return a pointer to an element by looking for the
+                    name.  In this case the name is not considered a “path” and must be equal to the name in the map.
 
-                    findElement( const std::string &str), findElement( const char *str ), findElement( std::string *s ) - Same as the findElement( const
-                    char *str) method.
+                    findElement( const std::string &str), findElement( const char *str ), findElement( std::string
+                    *s ) - Same as the findElement( const char *str) method.
 
-                    findCaseElement( const char *str ), findCaseElement( const std::string &str ), findCaseElement( const std::string *str) – Same as find
-                    Element, but ignore the case of the characters while doing the search.
+                    findCaseElement( const char *str ), findCaseElement( const std::string &str ), findCaseElement(
+                    const std::string *str) – Same as findElement, but ignore the case of the characters while doing
+                    the search.
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the value. (Should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
+                    value. (Should to be deleted)
 
-                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of the value in human readable form.
-                    (Should to be deleted)
+                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of
+                    the value in human readable form. (returned value should be deleted)
 
-                    toCompactJsonString() - creates and returns a std::string pointer to a JSON String representation of the value with no additional
-                    white space characters inserted. This makes it ideal for sending as a message. (Should to be deleted)
+                    toCompactJsonString() - creates and returns a std::string pointer to a JSON String
+                    representation of the value with no additional white space characters inserted. This makes it
+                    ideal for sending as a message. (Returned value should to be deleted)
 
-                    upDate( COMap *map, const char *name ) - This is used to update a COMap with data from another COMap.  The name allows the update
-                    operation to be performed on an object in the map rather than the map as a whole.
+                    upDate( COMap *map, const char *name ) - This is used to update a COMap with data from another
+                    COMap.  The name allows the update operation to be performed on an object in the map rather than
+                    the map as a whole.
 
                     merge( COMap *map, const char *name ) - Used to combine two COMaps into one.
 
-                    diff( COMap *newObj, const char *name ) - used to produce a COMap off all the objects that are different between two COMaps.
+                    diff( COMap *newObj, const char *name ) - used to produce a COMap off all the objects that are
+                    different between two COMaps.
 
-           COArray: This Object is used to simulate a JSON Array object.  They aren’t used all that often but support is needed.  The COArray is
-                    implemented as a std::vector< CppON *>.  Like with the COMap object this class supports iterators and paths.
+           COArray: This Object is used to simulate a JSON Array object.  They aren’t used all that often but
+                    support is needed.  The COArray is implemented as a std::vector< CppON *>.  Like with the COMap
+                    object this class supports iterators and paths.
 
-                    COArray( std::vector< CppON *> &v ) - This constructor is used to create a COArray from just a vector of CppON object pointers.
+                    COArray( std::vector< CppON *> &v ) - This constructor is used to create a COArray from just a
+                    vector of CppON object pointers.
 
                     value() - Return a pointer to the actual vector that holds the data.
 
-                    begin() - return a std::vector< CppON *>::iterator that points to the first element in the vector.
+                    begin() - return a std::vector< CppON *>::iterator that points to the first element in the
+                    vector.
 
                     end() - return a std::vector< cppON *>::iterator that represents the end of the vector.
 
@@ -668,11 +743,12 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     push( CppON *n ) - The same as push_back, it adds an object to the end of the vector.
  
-			  pop( ) - Remove and return the last item in the vector.
+                    pop( ) - Remove and return the last item in the vector.
         
                     pop_front() - Remove and return the first item in the vector.
 
-                    replace( size_t i, CppON *n) – remove and destroy the element at index i and replace it with the given object. 
+                    replace( size_t i, CppON *n) – remove and destroy the element at index i and replace it with the
+                    given object. 
                
                     remove( size_t idx) – Remove and return the element at index idx.
 
@@ -680,121 +756,152 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     Clear() - remove and destroy all objects from the vector.
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the value. (Should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
+                    value. ( Returned value should to be deleted)
 
-                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of the value in human readable form.
-                    (Should to be deleted)
+                    toJsonString() - creates and returns a std::string pointer to a JSON String representation of
+                    the value in human readable form. (Returned value should to be deleted)
 
-                    toCompactJsonString() - creates and returns a std::string pointer to a JSON String representation of the value with no additional
-                    white space characters inserted. This makes it ideal for sending as a message. (Should to be deleted)
+                    toCompactJsonString() - creates and returns a std::string pointer to a JSON String
+                    representation of the value with no additional white space characters inserted. This makes it
+                    ideal for sending as a message. (Returned value should to be deleted)
           
-           SCppObj: This is a “companion class” of the CPPON class.  It is dependent on it but adds some real functionality when using the CPPON class
-                    for use as “soft data structures”.  It allows the construction of such memory structures in system shared memory to be access by
-                    many programs and to be persistent even when the creating application shuts down or is restarted. 
+           SCppObj: This is a “companion class” of the CPPON class.  It is dependent on it but adds some real
+                    functionality when using the CPPON class for use as “soft data structures”.  It allows the
+                    construction of such memory structures in system shared memory to be access by many programs and
+                    to be persistent even when the creating application shuts down or is restarted. 
 
-                    The SCppObj.cpp class is an extension to the CppON class in that it requires the class in its initialization and to function.
+                    The SCppObj.cpp class is an extension to the CppON class in that it requires the class in its
+                    initialization and to function.
 
-                    Its purpose is to create and maintain a shared memory object that can be used by multiple applications and persist over shutdowns
-                    and startups on those applications.
+                    Its purpose is to create and maintain a shared memory object that can be used by multiple
+                    applications and persist over shutdowns and startups on those applications.
 
-                    The idea is that the object data structure is defined by a JSON file, and behaves much like an instance of a CPPON hierarchy,
-                    referenced by a given name and can be created by any application.
+                    The idea is that the object data structure is defined by a JSON file, and behaves much like an
+                    instance of a CPPON hierarchy, referenced by a given name and can be created by any application.
 
-                    There are a couple of features that are important to understand with the SCppObj.  The first is that like a JSON object (or CppON)
-                    all data is referenced by string path names where the data is referenced like in JSON as objects, arrays, strings, doubles, integers
-                    (Long of int) or bool (boolean) but unlike a CppON the data is not stored in ASCII or in actual structures of objects. Also, once
-                    created the structure is fixed. Space is allocated in shared memory based on information in the description. Strings have a maximum
-                    length.
+                    There are a couple of features that are important to understand with the SCppObj.  The first is
+                    that like a JSON object (or CppON) all data is referenced by string path names where the data is
+                    referenced like in JSON as objects, arrays, strings, doubles, integers (Long of int) or bool
+                    (boolean) but unlike a CppON the data is not stored in ASCII or in actual structures of objects.
+                    Also, once created the structure is fixed. Space is allocated in shared memory based on
+                    information in the description. Strings have a maximum length.
 
                     Path names can be delimited by either a dot "." or forward slash "/".  There is no difference.
 
                     The JSON description file:
                     
-                    When instantiated the first parameter of the SCppObj constructor is either a path name to a JSON file or a CppON::COMap.  This JSON 
-                    object is a description file that defines the layout of the SCppObj that is created.  It is organized as a COMap object containing
-                    other COMap objects which represent JSON objects.  Each object describes either a data type which could be a container object or one
-                    of the basic types: string, float, bool, or int.  The data type is defined by a string value (which is required) called "type".  For
-                    a object type the type value is set to "unit", and will be implemented as a "COMap" containing other objects.  Another required value
-                    for strings and integers is the "size" integer value. This give the number of bytes allocated for the data. (It's not required for
-                    booleans, nulls, or floats because the space for those is fixed. For strings the size it the maximum number of characters allocated 
-                    plus one for the null character.  For the integer types it must be 8, 4, 2 or 1.
+                    When instantiated the first parameter of the SCppObj constructor is either a path name to a JSON
+                    file or a CppON::COMap.  This JSON object is a description file that defines the layout of the
+                    SCppObj that is created.  It is organized as a COMap object containing other COMap objects which
+                    represent JSON objects.  Each object describes either a data type which could be a container
+                    object or one of the basic types: string, float, bool, or int.  The data type is defined by a
+                    string value (which is required) called "type".  For a object type the type value is set to
+                    "unit", and will be implemented as a "COMap" containing other objects.  Another required value
+                    for strings and integers is the "size" integer value. This give the number of bytes allocated
+                    for the data. (It's not required for booleans, nulls, or floats because the space for those is
+                    fixed. For strings the size it the maximum number of characters allocated plus one for the null
+                    character.  For the integer types it must be 8, 4, 2 or 1.
 
-                    For all basic types the "defaultValue" must be defined which is the initial value of the field on creation.  And, for the "float" 
-                    type a "precision" value can be defined which indicates the number of significant digits when converting it to a string.
+                    For all basic types the "defaultValue" must be defined which is the initial value of the field
+                    on creation.  And, for the "float" type a "precision" value can be defined which indicates the
+                    number of significant digits when converting it to a string.
  
-                    To summarize: The object is defined by a structure of structures with each structure representing a JSON value.  The value can be a
-                    type "COMap" which holds other JSON data and is denoted by the "type": "unit".  Or, it can be a basic type and denoted by the 
-                    "type": "string" | "float" | "int" | "bool".  "int" and "string" types must have a "size" parameter and "floats" can have a 
-                    "precision" value.  All basic values must have a defaultValue specified which the object is set to in initialization.
+                    To summarize: The object is defined by a structure of structures with each structure
+                    representing a JSON value.  The value can be a type "COMap" which holds other JSON data and is
+                    denoted by the "type": "unit".  Or, it can be a basic type and denoted by the "type": "string" |
+                    "float" | "int" | "bool".  "int" and "string" types must have a "size" parameter and "floats"
+                    can have a "precision" value.  All basic values must have a defaultValue specified which the
+                    object is set to in initialization.
  
        The SCppObj:
+                    Besides being stored in system shared memory, the SCppObj is far more efficient then storing
+                    data in either a CppON or JSON strings.  This is because the offset to the data is fixed and
+                    known.
 
-                    Besides being stored in system shared memory, the SCppObj is far more efficient then storing data in either a CppON or JSON strings.  This
-                    is because the offset to the data is fixed and known.
+                    However this comes at a cost:  Once created, it's structure if fixed and cannot be changed.
+                    Strings have a fixed maximum length.  Of course another great thing about it is the data is
+                    stored in system shared memory and is only be deleted by a reboot or performing the shared memory
+                    library call: shm_unlink( sm_name );  Where sm_name is the name of the SCppObj. (But the system
+                    will only delete the shared memory segment when all references to it are closed.)  All
+                    applications on the system can access it without fear of thread collisions or corruption.  This
+                    is due to its use of system semaphores.  These are handled by the class, but when desired to
+                    maintain synchronization of data can be handled by the application.
+ 
+                    It's important to note that the data is not stored in structures nor is accessible without
+                    accessing it through path names. When an application first instantiates the SCppObj object it
+                    builds an internal network of pointers called "STRUCT_LISTS" which are references to all objects
+                    and where they are stored in memory.  These Object contain type information and pointers to all
+                    contents and data that the variable accesses.  You can get a reference to one of these objects
+                    with the "getElement" request but should NEVER directly modify the contents one of these objects.
+ 
+                    Each data type and integer sizes have their own "accessors" to get and update data in the
+                    structure.  There are three types of accessors,  An example of each is:
+                    	*  bool updateString( const char *path, const char *str, bool protect = true, STRUCT_LISTS
+                           *lst = NULL ); ( returns true if value is valid )
+                    	*  double *readDouble( const char *path, double *result = NULL, bool protect = true,
+                           STRUCT_LISTS *lst = NULL );
+                     	*  double Doublevalue( const char *path, bool protect= true, STRUCT_LISTS *lst = NULL, bool
+                           *valid = NULL )
+ 
+                    With all data access calls the first parameter in the call defines the element the operation is
+                    to be performed on.  This can be a "STRUCT_LISTS" pointer to the element (not usually used) or a
+                    path name to the element. (To avoid lengthy searches it is best to use relative addressing of
+                    data.)  The path name starts at the top level and transitions through the object tree based on a
+                    dot (.) or slash (/) delimited string.  In the case of a "update" or "read" accessor call, the
+                    second parameter is always the value or pointer to the value to be returned. "Value" accessors
+                    don't have this parameter as the value is returned from the method.
 
-                    However this comes at a cost:  Once created, it's structure if fixed and cannot be changed.  Strings have a fixed maximum length.  Of course
-                    another great thing about it is the data is stored in system shared memory and is only be deleted by a reboot or performing the shared memory
-                    library call: shm_unlink( sm_name );  Where sm_name is the name of the SCppObj. (But the system will only delete the shared memory segment
-                    when all references to it are closed.)  All applications on the system can access it without fear of thread collisions or corruption.  This
-                    is due to its use of system semaphores.  These are handled by the class, but when desired to maintain synchronization of data can be handled 
-                    by the application.
- 
-                    It's important to note that the data is not stored in structures nor is accessible without accessing it through path names. When an application
-                    first instantiates the SCppObj object it builds an internal network of pointers called "STRUCT_LISTS" which are references to all objects and
-                    where they are stored in memory.  These Object contain type information and pointers to all contents and data that the variable accesses.  You
-                    can get a reference to one of these objects with the "getElement" request but should NEVER directly modify the contents one of these objects.
- 
-                    Each data type and integer sizes have their own "accessors" to get and update data in the structure.  There are three types of accessors,  An
-                    example of each is:
-                    	*  bool updateString( const char *path, const char *str, bool protect = true, STRUCT_LISTS *lst = NULL ); ( returns true if value is valid )
-                    	*  double *readDouble( const char *path, double *result = NULL, bool protect = true, STRUCT_LISTS *lst = NULL );
-                     	*  double Doublevalue( const char *path, bool protect= true, STRUCT_LISTS *lst = NULL, bool *valid = NULL )
- 
-                    With all data access calls the first parameter in the call defines the element the operation is to be performed on.  This can be a 
-                    "STRUCT_LISTS" pointer to the element (not usually used) or a path name to the element. (To avoid lengthy searches it is best to use relative
-                    addressing of data.)  The path name starts at the top level and transitions through the object tree based on a dot (.) or slash (/) delimited
-                    string.  In the case of a "update" or "read" accessor call, the second parameter is always the value or pointer to the value to be returned.
-                    "Value" accessors don't have this parameter as the value is returned from the method.
-
-                    For character array only, "read" calls the next parameter is the max size of the space to store the data.
+                    For character array only, "read" calls the next parameter is the max size of the space to store
+                    the data.
                     
-                    The next parameter is a boolean value where: true means to use (checkout) the semaphore for the structure and false means to ignore the 
-                    semaphore for this operation. (Make sure that if you enter true, the default, that you haven't already obtained the semaphore.  Remember: there
-                    is just one semaphore for all the data in the same structure.) Its a best practice to never "hold" more then one semaphore at a time and to only
-                    do so for a minimum amount of time. Making sure that you always return it.
+                    The next parameter is a boolean value where: true means to use (checkout) the semaphore for the
+                    structure and false means to ignore the semaphore for this operation. (Make sure that if you
+                    enter true, the default, that you haven't already obtained the semaphore.  Remember: there is
+                    just one semaphore for all the data in the same structure.) Its a best practice to never "hold"
+                    more then one semaphore at a time and to only do so for a minimum amount of time. Making sure
+                    that you always return it.
  
-                    The next optional parameter can be a "Parent" STRUCT_LISTS * which the first parameter is relative to.  The use of this can be a big performance
-                    boost as finding the data pointer is much faster.  (The default is NULL, and the "path" must be relative to the root)
+                    The next optional parameter can be a "Parent" STRUCT_LISTS * which the first parameter is
+                    relative to.  The use of this can be a big performance boost as finding the data pointer is much
+                    faster.  (The default is NULL, and the "path" must be relative to the root)
  
-                    On "value" accessors there is another optional parameter which is a point to a boolean value.  If the pointer is non-NULL (default is NULL) the
-                    return value will be true if the value is found, meaning the returned value is valid.
+                    On "value" accessors there is another optional parameter which is a point to a boolean value.
+                    If the pointer is non-NULL (default is NULL) the return value will be true if the value is
+                    found, meaning the returned value is valid.
  
                     There are three possible constructors
                        1) SCppObj::SCppObj( COMap *def, const char *segmentName, bool *initialized );
                        2) SCppObj::SCppObj( const char *configPath, const char *segmentName, bool *initialized )
-                       3) SCppObj::SCppObj( const char *configPath, const char *segmentName, void(*f)( SCppObj *obj ) )
+                       3) SCppObj::SCppObj( const char *configPath, const char *segmentName, void(*f)(SCppObj *obj))
                     
-                    The first two are the same, differing only in the fact that the fist is given a CppON::COMap for its configuration while the second is given a 
-                    pathname of a JSON file that contains the configuration.   The second parameter is the segment name which will identify the shared memory 
-                    segment and the third optional parameter is a pointer to a boolean flag so the calling application can determine if the instantiation of the 
-                    object was the one that created and initialized it, in case more needs to be done.
+                    The first two are the same, differing only in the fact that the fist is given a CppON::COMap for
+                    its configuration while the second is given a pathname of a JSON file that contains the
+                    configuration.   The second parameter is the segment name which will identify the shared memory
+                    segment and the third optional parameter is a pointer to a boolean flag so the calling
+                    application can determine if the instantiation of the object was the one that created and
+                    initialized it, in case more needs to be done.
  
-                    The third constructor allows you to pass a callback routine in the form of "void p( SCppObj *object );" which will be called if the object is 
-                    first created to allow a program to do further initialization that isn't contained in the JSON file.  (NOTE: as there usually isn't any 
-                    guarantee which application first instantiates thus creating the object, all application should use this form if it is required that the data 
-                    altered by the initiation callback.
+                    The third constructor allows you to pass a callback routine in the form of 
+                    "void p( SCppObj *object );" which will be called if the object is first created to allow a
+                    program to do further initialization that isn't contained in the JSON file.  (NOTE: as there
+                    usually isn't any guarantee which application first instantiates thus creating the object, all
+                    application should use this form if it is required that the data altered by the initiation
+                    callback.)
  
-                    This object can produce very complex multi-level data structures in a very optimized storage space.  It protects access of each structure buy
-                    use of semaphores, one for each structure.
+                    This object can produce very complex multi-level data structures in a very optimized storage
+                    space.  It protects access of each structure buy use of semaphores, one for each structure.
                     
-                    Semaphores are used by default for all accesses, both read or write.  However this functionality can be overridden on a call by call basis.  
-                    Also, for performance reasons you can "capture" the semaphore for a structure, performs multiple access to data in the structure without using 
-                    them and then release it.
+                    Semaphores are used by default for all accesses, both read or write.  However this functionality
+                    can be overridden on a call by call basis.  Also, for performance reasons you can "capture" the
+                    semaphore for a structure, performs multiple access to data in the structure without using them
+                    and then release it.
 
-                    Another big performance benefit when accessing data in a single structure is that a reference to the structure itself can be retrieved and than
-                    accesses to data in it can be done relative to it.  I.E  Suppose you have a structure that is multiple levels deep in the configuration like 
-                    system/configuration/tsp which contain the configuration information for the tracking signal processor.  With a SCppObj called "sysdata" you 
-                    can do something like the following:
+                    Another big performance benefit when accessing data in a single structure is that a reference to
+                    the structure itself can be retrieved and than accesses to data in it can be done relative to
+                    it.  I.E  Suppose you have a structure that is multiple levels deep in the configuration like 
+                    system/configuration/tsp which contain the configuration information for the tracking signal
+                    processor.  With a SCppObj called "sysdata" you can do something like the following:
                         uint64_t          hardwareRev = 0;
                         int32_t           softwareRev = 0;
                         std::string       address("");
