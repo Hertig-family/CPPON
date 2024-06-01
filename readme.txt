@@ -749,8 +749,8 @@ Dependent Libraries:The main dependent third party library that is required for 
         
                     pop_front() - Remove and return the first item in the vector.
 
-                    replace( size_t i, CppON *n) – remove and destroy the element at index i and replace it with the
-                    given object. 
+                    replace( size_t i, CppON *n) – remove and destroy the element at index i and replace it with
+                    the given object. 
                
                     remove( size_t idx) – Remove and return the element at index idx.
 
@@ -758,8 +758,8 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     Clear() - remove and destroy all objects from the vector.
 
-                    toNetString() - creates and returns a std::string pointer to a TNetString representation of the
-                    value. ( Returned value should to be deleted)
+                    toNetString() - creates and returns a std::string pointer to a TNetString representation of
+                    the value. ( Returned value should to be deleted)
 
                     toJsonString() - creates and returns a std::string pointer to a JSON String representation of
                     the value in human readable form. (Returned value should to be deleted)
@@ -770,8 +770,8 @@ Dependent Libraries:The main dependent third party library that is required for 
           
            SCppObj: This is a “companion class” of the CPPON class.  It is dependent on it but adds some real
                     functionality when using the CPPON class for use as “soft data structures”.  It allows the
-                    construction of such memory structures in system shared memory to be access by many programs and
-                    to be persistent even when the creating application shuts down or is restarted. 
+                    construction of such memory structures in system shared memory to be access by many programs
+                    and to be persistent even when the creating application shuts down or is restarted. 
 
                     The SCppObj.cpp class is an extension to the CppON class in that it requires the class in its
                     initialization and to function.
@@ -780,30 +780,31 @@ Dependent Libraries:The main dependent third party library that is required for 
                     applications and persist over shutdowns and startups on those applications.
 
                     The idea is that the object data structure is defined by a JSON file, and behaves much like an
-                    instance of a CPPON hierarchy, referenced by a given name and can be created by any application.
+                    instance of a CPPON hierarchy, referenced by a given name and can be created by any
+                    application.
 
-                    There are a couple of features that are important to understand with the SCppObj.  The first is
-                    that like a JSON object (or CppON) all data is referenced by string path names where the data is
-                    referenced like in JSON as objects, arrays, strings, doubles, integers (Long of int) or bool
-                    (boolean) but unlike a CppON the data is not stored in ASCII or in actual structures of objects.
-                    Also, once created the structure is fixed. Space is allocated in shared memory based on
-                    information in the description. Strings have a maximum length.
+                    There are a couple of features that are important to understand with the SCppObj.  The first
+                    is that like a JSON object (or CppON) all data is referenced by string path names where the
+                    data is referenced like in JSON as objects, arrays, strings, doubles, integers (Long of int)
+                    or bool (boolean) but unlike a CppON the data is not stored in ASCII or in actual structures
+                    of objects. Also, once created the structure is fixed. Space is allocated in shared memory
+                    based on information in the description. Strings have a maximum length.
 
                     Path names can be delimited by either a dot "." or forward slash "/".  There is no difference.
 
                     The JSON description file:
                     
-                    When instantiated the first parameter of the SCppObj constructor is either a path name to a JSON
-                    file or a CppON::COMap.  This JSON object is a description file that defines the layout of the
-                    SCppObj that is created.  It is organized as a COMap object containing other COMap objects which
-                    represent JSON objects.  Each object describes either a data type which could be a container
-                    object or one of the basic types: string, float, bool, or int.  The data type is defined by a
-                    string value (which is required) called "type".  For a object type the type value is set to
-                    "unit", and will be implemented as a "COMap" containing other objects.  Another required value
-                    for strings and integers is the "size" integer value. This give the number of bytes allocated
-                    for the data. (It's not required for booleans, nulls, or floats because the space for those is
-                    fixed. For strings the size it the maximum number of characters allocated plus one for the null
-                    character.  For the integer types it must be 8, 4, 2 or 1.
+                    When instantiated the first parameter of the SCppObj constructor is either a path name to a
+                    JSON file or a CppON::COMap.  This JSON object is a description file that defines the layout
+                    of the SCppObj that is created.  It is organized as a COMap object containing other COMap
+                    objects which represent JSON objects.  Each object describes either a data type which could be
+                    a container object or one of the basic types: string, float, bool, or int.  The data type is
+                    defined by a string value (which is required) called "type".  For a object type the type value
+                    is set to "unit", and will be implemented as a "COMap" containing other objects.  Another
+                    required value for strings and integers is the "size" integer value. This give the number of
+                    bytes allocated for the data. (It's not required for booleans, nulls, or floats because the
+                    space for those is fixed. For strings the size it the maximum number of characters allocated
+                    plus one for the null character.  For the integer types it must be 8, 4, 2 or 1.
 
                     For all basic types the "defaultValue" must be defined which is the initial value of the field
                     on creation.  And, for the "float" type a "precision" value can be defined which indicates the
@@ -811,8 +812,8 @@ Dependent Libraries:The main dependent third party library that is required for 
  
                     To summarize: The object is defined by a structure of structures with each structure
                     representing a JSON value.  The value can be a type "COMap" which holds other JSON data and is
-                    denoted by the "type": "unit".  Or, it can be a basic type and denoted by the "type": "string" |
-                    "float" | "int" | "bool".  "int" and "string" types must have a "size" parameter and "floats"
+                    denoted by the "type": "unit".  Or, it can be a basic type and denoted by the "type": "string" 
+                    | "float" | "int" | "bool".  "int" and "string" types must have a "size" parameter and "floats"
                     can have a "precision" value.  All basic values must have a defaultValue specified which the
                     object is set to in initialization.
  
@@ -833,11 +834,11 @@ Dependent Libraries:The main dependent third party library that is required for 
  
                     It's important to note that the data is not stored in structures nor is accessible without
                     accessing it through path names. When an application first instantiates the SCppObj object it
-                    builds an internal network of pointers called "STRUCT_LISTS" which are references to all objects
-                    and where they are stored in memory.  These Object contain type information and pointers to all
-                    contents and data that the variable accesses.  You can get a reference to one of these objects
-                    with the "getElement" request but should NEVER directly modify the contents one of these
-                    objects.
+                    builds an internal network of pointers called "STRUCT_LISTS" which are references to all
+                    objects and where they are stored in memory.  These Object contain type information and
+                    pointers to all contents and data that the variable accesses.  You can get a reference to one
+                    of these objects with the "getElement" request but should NEVER directly modify the contents
+                    one of these objects.
  
                     Each data type and integer sizes have their own "accessors" to get and update data in the
                     structure.  There are three types of accessors,  An example of each is:
@@ -849,12 +850,12 @@ Dependent Libraries:The main dependent third party library that is required for 
                            *valid = NULL )
  
                     With all data access calls the first parameter in the call defines the element the operation is
-                    to be performed on.  This can be a "STRUCT_LISTS" pointer to the element (not usually used) or a
-                    path name to the element. (To avoid lengthy searches it is best to use relative addressing of
-                    data.)  The path name starts at the top level and transitions through the object tree based on a
-                    dot (.) or slash (/) delimited string.  In the case of a "update" or "read" accessor call, the
-                    second parameter is always the value or pointer to the value to be returned. "Value" accessors
-                    don't have this parameter as the value is returned from the method.
+                    to be performed on.  This can be a "STRUCT_LISTS" pointer to the element (not usually used) or
+                    a path name to the element. (To avoid lengthy searches it is best to use relative addressing of
+                    data.)  The path name starts at the top level and transitions through the object tree based on
+                    a dot (.) or slash (/) delimited string.  In the case of a "update" or "read" accessor call,
+                    the second parameter is always the value or pointer to the value to be returned. "Value"
+                    accessors don't have this parameter as the value is returned from the method.
 
                     For character array only, "read" calls the next parameter is the max size of the space to store
                     the data.
@@ -867,8 +868,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     that you always return it.
  
                     The next optional parameter can be a "Parent" STRUCT_LISTS * which the first parameter is
-                    relative to.  The use of this can be a big performance boost as finding the data pointer is much
-                    faster.  (The default is NULL, and the "path" must be relative to the root)
+                    relative to.  The use of this can be a big performance boost as finding the data pointer is
+                    much faster.  (The default is NULL, and the "path" must be relative to the root)
  
                     On "value" accessors there is another optional parameter which is a point to a boolean value.
                     If the pointer is non-NULL (default is NULL) the return value will be true if the value is
@@ -877,10 +878,11 @@ Dependent Libraries:The main dependent third party library that is required for 
                     There are three possible constructors
                        1) SCppObj::SCppObj( COMap *def, const char *segmentName, bool *initialized );
                        2) SCppObj::SCppObj( const char *configPath, const char *segmentName, bool *initialized )
-                       3) SCppObj::SCppObj( const char *configPath, const char *segmentName, void(*f)(SCppObj *obj))
+                       3) SCppObj::SCppObj( const char *configPath, const char *segmentName, 
+                          void( *f )( SCppObj *obj ) )
                     
-                    The first two are the same, differing only in the fact that the fist is given a CppON::COMap for
-                    its configuration while the second is given a pathname of a JSON file that contains the
+                    The first two are the same, differing only in the fact that the fist is given a CppON::COMap
+                    for its configuration while the second is given a pathname of a JSON file that contains the
                     configuration.   The second parameter is the segment name which will identify the shared memory
                     segment and the third optional parameter is a pointer to a boolean flag so the calling
                     application can determine if the instantiation of the object was the one that created and
@@ -896,16 +898,16 @@ Dependent Libraries:The main dependent third party library that is required for 
                     This object can produce very complex multi-level data structures in a very optimized storage
                     space.  It protects access of each structure buy use of semaphores, one for each structure.
                     
-                    Semaphores are used by default for all accesses, both read or write.  However this functionality
-                    can be overridden on a call by call basis.  Also, for performance reasons you can "capture" the
-                    semaphore for a structure, performs multiple access to data in the structure without using them
-                    and then release it.
+                    Semaphores are used by default for all accesses, both read or write.  However this
+                    functionality can be overridden on a call by call basis.  Also, for performance reasons you
+                    can "capture" the semaphore for a structure, performs multiple access to data in the structure
+                    without using them and then release it.
 
-                    Another big performance benefit when accessing data in a single structure is that a reference to
-                    the structure itself can be retrieved and than accesses to data in it can be done relative to
-                    it.  I.E  Suppose you have a structure that is multiple levels deep in the configuration like 
-                    system/configuration/tsp which contain the configuration information for the tracking signal
-                    processor.  
+                    Another big performance benefit when accessing data in a single structure is that a reference
+                    to the structure itself can be retrieved and than accesses to data in it can be done relative
+                    to it.  I.E  Suppose you have a structure that is multiple levels deep in the configuration
+                    like system/configuration/tsp which contain the configuration information for the tracking
+                    signal processor.  
                         uint64_t          hardwareRev = 0;
                         int32_t           softwareRev = 0;
                         std::string       address("");
@@ -955,9 +957,9 @@ Dependent Libraries:The main dependent third party library that is required for 
                         sysdata->postSem( "address, tsp );
                     }
 
-                    Like with the CppON there are calls to determine the type like isInteger, isDouble, isString ....
-                    There are also a whole bunch of calls to return a CppON value of the various types (To prevent
-                    memory leaks these should be deleted.)   They are things like:
+                    Like with the CppON there are calls to determine the type like isInteger, isDouble, isString
+                    ....  There are also a whole bunch of calls to return a CppON value of the various types (To
+                    prevent memory leaks these should be deleted.)   They are things like:
                         * toCODouble() returns a CODouble
                         * toCOInteger() return a COInteger
                         * toCOMap() returns a COMap of a structure
@@ -967,14 +969,14 @@ Dependent Libraries:The main dependent third party library that is required for 
                     There are other functions which you can look at the header file for but this pretty much covers
                     what you need.
 
-     Semaphore use: Semaphores are a necessary evil of multi-threaded programming.  The protect data from corruption
-                    and reading invalid or un-synchronized data.  Especially strings.  However they are extremely
-                    dangerous if misused because the can cause threads to become permanently locked.  Although in
-                    its basic form the CObj can be used without every dealing with them, in which case it will
-                    handle them safely without intervention.  Or access can be used in such a way as to ignore the
-                    semaphores on a call by call basis.  Considerable performance and safety can be gained by a
-                    little management on the part of the programmer.  To avoid problems there are a few basic rules
-                    that must always be followed when dealing with them:
+     Semaphore use: Semaphores are a necessary evil of multi-threaded programming.  The protect data from
+                    corruption and reading invalid or un-synchronized data.  Especially strings.  However they are
+                    extremely dangerous if misused because the can cause threads to become permanently locked.
+                    Although in its basic form the CObj can be used without every dealing with them, in which case
+                    it will handle them safely without intervention.  Or access can be used in such a way as to
+                    ignore the semaphores on a call by call basis.  Considerable performance and safety can be
+                    gained by a little management on the part of the programmer.  To avoid problems there are a
+                    few basic rules that must always be followed when dealing with them:
                         1) Never own two semaphores at the same time.  This is just looking for trouble  especially
                            when one thread can have one and then try to check out another while another thread has
                            the second on and is try to check out the first.
@@ -983,8 +985,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                         3) When you check out a semaphore, get done quickly and free it up as soon as possible.
                            Avoid calling subroutines or methods while you own a semaphore.
                         4) Don't checkout semaphores from within an interrupt.
-                        5) Be very careful of multiple paths or exits from code after checking out a semaphore which
-                           could cause the code to not free it.
+                        5) Be very careful of multiple paths or exits from code after checking out a semaphore
+                           which could cause the code to not free it.
 
                     Best practices:
                        * The shared memory object can be very large and complicated but usually a section of code
