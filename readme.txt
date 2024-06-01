@@ -901,69 +901,93 @@ Dependent Libraries:The main dependent third party library that is required for 
                     the structure itself can be retrieved and than accesses to data in it can be done relative to
                     it.  I.E  Suppose you have a structure that is multiple levels deep in the configuration like 
                     system/configuration/tsp which contain the configuration information for the tracking signal
-                    processor.  With a SCppObj called "sysdata" you can do something like the following:
+                    processor.  
                         uint64_t          hardwareRev = 0;
                         int32_t           softwareRev = 0;
                         std::string       address("");
                         char              amazonId[ 18 ];
                         bool              hasTSP = false;
                         bool              valid = false;
- 
-                    STRUCT_LISTS *tsp = sysdata->getElement( "configuration.tsp" );            // Get a reference object to the tsp section of the configuration data.
-                                                                                               // (Note: Could of used "configuration/tsp" )
-                    if( tsp )	                                                                 // Make sure your request was successful. ( tsp is a reverence don't 
-                                                                                               // delete it. )
+                    /* 
+                     * Get a reference object to the tsp section of the configuration data. 
+                     * With a SCppObj called "sysdata" you can do something like the following:
+                     */
+                    STRUCT_LISTS *tsp = sysdata->getElement( "system.configuration.tsp" );
+                    /* 
+                     * Note: Could of used "system/configuration/tsp"
+		     * tsp should be considered a constent pointer, don't delete or modify it 
+                     */
+                    if( tsp )  // Make sure your request was successful. 
                     {
-                        sysdata->waitSem( "address", tsp );	                                    // Optional: Capture the semaphore for the whole tsp section so values
-                                                                                               // can be changed in a group and increase performance
-                        sysdata->readString( "address", &address, false, tsp );                // read a string value "configuration.tsp.address" into a std::string
-                                                                                               // value called "address" without getting the semaphore and using the tsp 
-                                                                                               // reference
-                        sysdata->readString( "amazon_number, amazonId, 18, false, tsp );	      // read a string value into a character array of size 18 (size must include
-                                                                                               // null character)
-                        sysdata->readBool( "installed", &hasTSP, false, tsp );                 // read a boolean value called installed into a value hasTSP
-                        stsdata->readInt( "software_rev", &softwareRev, false, tsp );          // read an 32 bit integer called software_rev
-                        hardwareRev=sysdata->longValue( "hardware_rev", false, tsp, &valid );  // Another way to read a value.  This time returning the value.  The 
-                                                                                               // optional parameter "valid" is set to true if the return value is valid.
-                                                                                               // I.E. the "configuration.tsp.hardware_rev" 8 byte integer exists.
-                        sysdata->updateString( "user", "Peter", false, tsp );                  // modify the string value "configuration/tsp/user" to make it contain 
-                                                                                               // "Peter\0"
+                        /*
+                         * Access to all "primitive" data types is a structure are controled by a single semaphore
+                         * therefore to improve performance and keep all related data updated together the
+                         * sepaphore can for any one item can be "captured" and held while updating all the items
+                         * Access the data relative to the tsp item and pass "false" to avoid attempting to 
+                         * aquire the sepahore again
+                         */
+                        sysdata->waitSem( "address", tsp );   				// lock the semephore
+                        sysdata->readString( "address", &address, false, tsp );         // read a string     
+                        sysdata->readString( "amazon_number, amazonId, 18, false, tsp );// read into char buffer
+                        sysdata->readBool( "installed", &hasTSP, false, tsp );          // read a boolean
+                        stsdata->readInt( "software_rev", &softwareRev, false, tsp );   // read an 32 bit integer
+                        /* 
+                         * Another way to read a value.  This time returning the value.  The optrional parameter
+                         * valid is is set to true if the return value is valid.
+                         * I.E. the "configuration.tsp.hardware_rev" 8 byte integer exists.
+                         */
+                        hardwareRev=sysdata->longValue( "hardware_rev", false, tsp, &valid );
+                        /* Modify the string value "system/configuration/tsp/user" to make it contain "Peter\0" */
+                        sysdata->updateString( "user", "Peter", false, tsp );
+                        /*
+                         * Modify the string value "system/configuration/tsp/address" to make it contain
+                         * "192.168.123.156\0"
+                         */
                         address = "192.168.123.156";
-                        sysdata->updateString( "address", address, false, tsp);                // modify the string value "configuration/tsp/address" to make it contain
-                                                                                               // "192.168.123.156\0"
-
-                        sysdata->postSem( "address, tsp );                                     // Free the semaphore so other threads can access the data.
+                        sysdata->updateString( "address", address, false, tsp);
+                        /*
+                         * Release the semaphore so other threads/programs can access the data.
+                         */
+                        sysdata->postSem( "address, tsp );
                     }
 
                     Like with the CppON there are calls to determine the type like isInteger, isDouble, isString ....
-                    There are also a whole bunch of calls to return a CppON value of the various types (To prevent memory leaks these should be deleted.)   They are
-                    things like:
+                    There are also a whole bunch of calls to return a CppON value of the various types (To prevent
+                    memory leaks these should be deleted.)   They are things like:
                         * toCODouble() returns a CODouble
                         * toCOInteger() return a COInteger
                         * toCOMap() returns a COMap of a structure
                         * ToJObject() returns an object of whatever type it is.
                         * and so forth
  
-                    There are other functions which you can look at the header file for but this pretty much covers what you need.
+                    There are other functions which you can look at the header file for but this pretty much covers
+                    what you need.
 
-                    Semaphore use:
-                    Semaphores are a necessary evil of multi-threaded programming.  The protect data from corruption and reading invalid or un-synchronized data.  
-                    Especially strings.  However they are extremely dangerous if misused because the can cause threads to become permanently locked.  Although in its
-                    basic form the CObj can be used without every dealing with them, in which case it will handle them safely without intervention.  Or access can be 
-                    used in such a way as to ignore the semaphores on a call by call basis.  Considerable performance and safety can be gained by a little 
-                    management on the part of the programmer.  To avoid problems there are a few basic rules that must always be followed when dealing with them:
-                        1) Never own two semaphores at the same time.  This is just looking for trouble  especially when one thread can have one and then try to check
-                           out another while another thread has the second on and is try to check out the first.
-                        2) Be very careful never to try to check out the same semaphore twice. This is a guaranteed thread lock.
-                        3) When you check out a semaphore, get done quickly and free it up as soon as possible.  Avoid calling subroutines or methods while you own
-                           a semaphore.
+     Semaphore use: Semaphores are a necessary evil of multi-threaded programming.  The protect data from corruption
+                    and reading invalid or un-synchronized data.  Especially strings.  However they are extremely
+                    dangerous if misused because the can cause threads to become permanently locked.  Although in its
+                    basic form the CObj can be used without every dealing with them, in which case it will handle
+                    them safely without intervention.  Or access can be used in such a way as to ignore the
+                    semaphores on a call by call basis.  Considerable performance and safety can be gained by a
+                    little management on the part of the programmer.  To avoid problems there are a few basic rules
+                    that must always be followed when dealing with them:
+                        1) Never own two semaphores at the same time.  This is just looking for trouble  especially
+                           when one thread can have one and then try to check out another while another thread has
+                           the second on and is try to check out the first.
+                        2) Be very careful never to try to check out the same semaphore twice. This is a guaranteed
+                           thread lock.
+                        3) When you check out a semaphore, get done quickly and free it up as soon as possible.
+                           Avoid calling subroutines or methods while you own a semaphore.
                         4) Don't checkout semaphores from within an interrupt.
-                        5) Be very careful of multiple paths or exits from code after checking out a semaphore which could cause the code to not free it.
+                        5) Be very careful of multiple paths or exits from code after checking out a semaphore which
+                           could cause the code to not free it.
 
                     Best practices:
-                       * The shared memory object can be very large and complicated but usually a section of code will only be working within a certain area.  In
-                         which case it is always best to get a reference to the "piece" of the object and access the information relative to it.  You can do this 
-                         with or without owning the semaphore to the structure.
-                       * If you know that your thread is the only one modifying a section of data, you can bypass the semaphore checking on reads.
+                       * The shared memory object can be very large and complicated but usually a section of code
+                         will only be working within a certain area.  In which case it is always best to get a
+                         reference to the "piece" of the object and access the information relative to it.  You can
+                         do this with or without owning the semaphore to the structure.
+                       * If you know that your thread is the only one modifying a section of data, you can bypass
+                         the semaphore checking on reads.
 
 	
