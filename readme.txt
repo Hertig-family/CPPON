@@ -11,12 +11,13 @@
         What it is: It is a C++ Shared Library which implements a class hierarchy representing a JSON message.  It
                     can take a JSON message and insatiate a C++ class structure representing all the elements of 
                     the message and allow them to be read/manipulated by the C++ program. The data objects and/or 
-                    structure can be accessed/manipulated using “paths” in much the same way as it is in JavaScript.
+                    structure can be accessed/manipulated using “paths” in much the same way as it is in
+                    JavaScript.
 
-                    The class hierarchy is all derived from a single base class with two container classes and five 
-                    base objects representing float, integer, string, boolean, and the null data types.  The two 
-                    “container” classes which are implemented as a “std::map” and a “std::vector” (complete with 
-                    iterators) can hold any of the object types.
+                    The class hierarchy is all derived from a single base class with two container classes and
+                    five primative objects representing float, integer, string, boolean, and the null data types.
+                    The two “container” classes which are implemented as a “std::map” and a “std::vector”
+                    (complete with iterators) can hold any of the object types.
 
                     Any valid JSON string or file can be parsed into a complete data structure with a single
                     command without the need to even know the messages contents. The system also works with
@@ -218,7 +219,7 @@
                                     */
                                    rsp.append( "people", people );
                                 } else {
-			            rsp.append( "response", new COString("Request failed: Hours file is corrupt") );
+			            rsp.append("response", new COString("Request failed: Hours file is corrupt"));
                                 }
                             } else if( ! request.compare( "info" ) ) {
                                 /*
@@ -273,8 +274,8 @@
                                 rsp.append( "response", new COString( request ) );
                             }
                             /* 
-                             * create a compact string representation of the object (Note: the rsp object is deleted
-                             * when it goes out of scope )
+                             * create a compact string representation of the object (Note: the rsp object is
+                             * deleted when it goes out of scope )
                              */
                             reply = rsp.toCompactJsonString();
                         } else {
@@ -303,12 +304,12 @@
 
    Class Libraries: There are three shared class libraries as described below:
 
-             CPPON: This is the C++ Object Notation library that represents a JSON Message as a C++ class hierarchy.
-                    It consists of a base class, two
+             CPPON: This is the C++ Object Notation library that represents a JSON Message as a C++ class
+                    hierarchy.  It consists of a base class, two
                     container classes and five base object classes:
                          • C++ Object Notation Object (CppON ) - The base class from which all other classes are
-                           derived. It instantiates common methods (which are often overridden) that all objects are
-                           required to have.  It enables container classes to use the base class as the storage
+                           derived. It instantiates common methods (which are often overridden) that all objects
+                           are required to have.  It enables container classes to use the base class as the storage
                            type.  It can be instantiated from another CppON to make a copy, created programmatic-
                            ally, parsed from a C String, a std::string, a CSV C string a TSV C string, a JSON File,
                            an XML file or a TNetString.
@@ -319,18 +320,18 @@
                           representing a map or a reference to a std::map of the type <std::string, CppON *>.
                         • C Object Array (COArray) – This object is based on the std::Vector object and is of the
                           type std::vector<CppON *>. It implements the JSON Array type and is used to hold a list 
-                          of objects, including other container classes.  Note that unlike C type Arrays the objects
-                          don’t have to be of the same type.  Like the COMap there is a begin() and end() method
-                          which returns an iterator pointer which can be used like in any vector to iterate through
-                          all the object in the container.  Likewise the at( unsigned int) function can be used to
-                          retrieve an element based on an index.
+                          of objects, including other container classes.  Note that unlike C type Arrays the
+                          objects don’t have to be of the same type.  Like the COMap there is a begin() and end()
+                          method which returns an iterator pointer which can be used like in any vector to iterate
+                          through all the object in the container.  Likewise the at( unsigned int) function can be
+                          used to retrieve an element based on an index.
                         • C Object Integer(COInterger) – This class is used to represent whole numbers which can be
                           of size 8, 16, 32, or 64 bits in length.
-                        • C Object Double (CODouble) – This class represents all floating point numbers.  Internally
-                          all floating point numbers are stored as doubles but they can be retrieved as either a
-                          float value or a double value.
-                        • C Object Boolean (COBoolean) – This class represents a boolean value of true or false, one
-                          or zero.
+                        • C Object Double (CODouble) – This class represents all floating point numbers.
+                          Internally all floating point numbers are stored as doubles but they can be retrieved as
+                          either a float value or a double value.
+                        • C Object Boolean (COBoolean) – This class represents a boolean value of true or false,
+                          one or zero.
                         • C Object String (COString) – While the name implies correctly that this object holds a
                           array of characters it can also hold an array of binary data and/or base64 encoded binary
                           data.  However, its main function is to save character strings.
@@ -361,12 +362,13 @@
                     The description JSON data contains default values for all the data but in some cases additional
                     initialization may be required. Thus the callback function.
                     
-      LocalCppObj:  The Local C++ Object is the last of the companion classes and it requires both the SCppObj class
-                    and the CppON class.  In fact it requires that a pointer to a SCppObj object be passed to the
-                    constructor.  It uses that pointer to access the data.  The calling software can get pointers to
-                    sections of the data to request a response object of anything that changed since the last
-                    request.  That object could be as restricted as a single base object or as broad as the whole
-                    data structure. (Although one would hope it would be something somewhere in the middle.) 
+      LocalCppObj:  The Local C++ Object is the last of the companion classes and it requires both the SCppObj
+                    class and the CppON class.  In fact it requires that a pointer to a SCppObj object be passed
+                    to the constructor.  It uses that pointer to access the data.  The calling software can get
+                    pointers to sections of the data to request a response object of anything that changed since
+                    the last request.  That object could be as restricted as a single base object or as broad as
+                    the whole data structure. (Although one would hope it would be something somewhere in the
+                    middle.) 
 
 Dependent Libraries:The main dependent third party library that is required for this class family is the Jansson
                     library used for parsing JSON strings https://github.com/akheron/jansson.  Include the jansson
@@ -375,15 +377,15 @@ Dependent Libraries:The main dependent third party library that is required for 
                     The other libraries that are required are almost always available automatically with your
                     distribution and are std::string, std::vector and std::map.
 
-                    Finally, if you want to use XML with the libraries you will need to install libxml2-dev and then
-                    find the line “#define HAS_XML 0” and the CppON.hpp file and set it to 1.  Add libxml2 as a
-                    library in your build.
+                    Finally, if you want to use XML with the libraries you will need to install libxml2-dev and
+                    then find the line “#define HAS_XML 0” and the CppON.hpp file and set it to 1.  Add libxml2 as
+                    a library in your build.
 
- Class Definitions: All the class object in the CPPON library are derived from the CppON base object and many of the
-                    methods are overridden most of them will give the correct results when cast to the base class as
-                    they are when retrieved from one of the container classes.  However, it is recommended that upon
-                    obtaining a pointer to a CppON object that it be cast to the correct type when operating on/with
-                    it.
+ Class Definitions: All the class object in the CPPON library are derived from the CppON base object and many of
+                    the methods are overridden most of them will give the correct results when cast to the base
+                    class as they are when retrieved from one of the container classes.  However, it is
+                    recommended that upon obtaining a pointer to a CppON object that it be cast to the correct
+                    type when operating on/with it.
 
                     CppON( cppON &jt ) – Create a copy of another CppON object by references.
 
@@ -416,8 +418,8 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     getData() - Returns a pointer to the allocated data area for the object.
 
-                    toDouble() - Attempts to convert the data to a double value and return it.  If it isn’t possible
-                    the value of -999999999.123 is returned.
+                    toDouble() - Attempts to convert the data to a double value and return it.  If it isn’t
+                    possible the value of -999999999.123 is returned.
 
                     toInteger() - Attempts to convert the data to an integer value.  If it isn’t possible then zero
                     is returned.
@@ -465,8 +467,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     object and the given one.  Good for finding changes in a map or an array.
 
                     c_str() - This returns a const char pointer to a C string representing the data.  This could be
-                    just the conversion of a number to a string or in the case of a COMap or COArray it could be the
-                    complex JSON string.
+                    just the conversion of a number to a string or in the case of a COMap or COArray it could be
+                    the complex JSON string.
 
                     readObj( FILE *fp ) - read the file and attempt to parse the contents into a CPPON object.
 
@@ -477,8 +479,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     parseJson( const char *str ) - This function is used to attempt to crate a CPPON object from a 
                     C string.  It will determine the type of object based on the first not white space character.
 
-                    parseJson( json_t *ob, std::string &tabs ) - This is actually a low level function used to parse
-                    JSON data using the jansson library. Users should ignore it.
+                    parseJson( json_t *ob, std::string &tabs ) - This is actually a low level function used to
+                    parse JSON data using the jansson library. Users should ignore it.
 
                     parseXML( const char *str ) – This function (available if the HAS_XML flag is set) is used to
                     attempt to create a CPPON object from a string containing XML.
@@ -507,7 +509,8 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     longValue() - Returns the value, no matter what size it is, as a long long.
 
-                    charValue() - Returns the value, no matter what size it is, truncated to an eight bit character.
+                    charValue() - Returns the value, no matter what size it is, truncated to an eight bit
+                    character.
 
                     shortValue() - Returns the value, no matter what size it is, truncated to a sixteen bit number.
 
@@ -543,14 +546,14 @@ Dependent Libraries:The main dependent third party library that is required for 
                     toJsonString() - creates and returns a std::string pointer to a JSON String representation of
                     the value. (Should to be deleted)
 
-            CONull: While the CONull class exists it is only a “transitional” object and doesn’t provide any purpose
-                    except for completeness.
+            CONull: While the CONull class exists it is only a “transitional” object and doesn’t provide any
+                    purpose except for completeness.
 
          COBoolean: This class represents boolean values of true and false.
 
-                    = operator provides a number of ways the false can be set from either another COBoolean or a c++
-                    bool value.  And, while might be good to add the ability to set it to a zero or non zero number,
-                    this has not been done.
+                    = operator provides a number of ways the false can be set from either another COBoolean or a 
+                    c++ bool value.  And, while might be good to add the ability to set it to a zero or non zero
+                    number, this has not been done.
 
                     Value() - The value function returns a boolean value of true or false. 
 
@@ -580,10 +583,10 @@ Dependent Libraries:The main dependent third party library that is required for 
                     Base64Decode( const char *tmp, unsigned int sz, unsigned int &len, char *out = NULL ) - This
                     function is more or less a generic function used to convert a Base 64 encoded string back into
                     binary data.  It is used by the class and is made available to other applications.  “tmp” is a
-                    pointer to the base 64 data and sz is the size of the data.  “out” if set must point to a buffer
-                    large enough to hold the data ( sz + 3 should work).  If it is NULL then space will be allocated
-                    as an array of characters with the new operator. “len” will be set to the number of bytes in the
-                    output string.  Which will be null terminated even though it is binary data?
+                    pointer to the base 64 data and sz is the size of the data.  “out” if set must point to a
+                    buffer large enough to hold the data ( sz + 3 should work).  If it is NULL then space will be
+                    allocated as an array of characters with the new operator. “len” will be set to the number of
+                    bytes in the output string.  Which will be null terminated even though it is binary data?
 
                     = operator works for setting the value to both C strings and std::strings but also integers of
                     type uint64_t, uint32_t, and int.
@@ -592,8 +595,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     Encode binary data int a JSON string where data is a pointer to the binary data and len is the
                     number of characters.
 
-                    ToBase64JsonString() - method to convert a COString that holds binary data into a JSON string of
-                    base64 characters.
+                    ToBase64JsonString() - method to convert a COString that holds binary data into a JSON string
+                    of base64 characters.
 
                     toNetString() - creates and returns a std::string pointer to a TNetString representation of the
                     value. (Should to be deleted)
@@ -604,10 +607,10 @@ Dependent Libraries:The main dependent third party library that is required for 
              COMap: This is the main container class which usually holds all other instances of the message.  It is
                     implemented as a std::map<std::string, CPPON *>.
 
-                    As such it has a number of functions dedicated to iterating through the items in the map as well
-                    as the ability to search add and remove items from from the map.  It is important to note that
-                    all objects contained in the map are “owned” by the map.  This means that when the object is
-                    destroyed all object contained by the map will also be destroyed.
+                    As such it has a number of functions dedicated to iterating through the items in the map as
+                    well as the ability to search add and remove items from from the map.  It is important to note
+                    that all objects contained in the map are “owned” by the map.  This means that when the object
+                    isn destroyed all object contained by the map will also be destroyed.
           
                     It should also be understood that when a COMap object is created either by the use of a JSON
                     string or by a JSON Object all object contained will also be created.  In this way a very
@@ -636,9 +639,9 @@ Dependent Libraries:The main dependent third party library that is required for 
                     to the first element in the map.  This iterator can be used to index through the child objects
                     in the map.
  
-                    end() - returns an iterator of type std::map<std::string, CppON *>::iterator which points to the
-                    first object after the end of the map which can be used as a comparisons to the one return from
-                    the begin() function to know that the all values have be indexed through.
+                    end() - returns an iterator of type std::map<std::string, CppON *>::iterator which points to
+                    the first object after the end of the map which can be used as a comparisons to the one return
+                    from the begin() function to know that the all values have be indexed through.
 
                     extract( const char *name ) - Search for a element that string matches the “name”.  If found
                     remove it and return a pointer to it.  Note, as it has been removed from the COMap, the code is
@@ -661,8 +664,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     append( std::string key, const char *value ) - Create a new COString object from the value and
                     add it to the COMap object.
  
-                    append( std::string key, double value ) - Create a new CODouble object from the value and add it
-                    to the COMap object.
+                    append( std::string key, double value ) - Create a new CODouble object from the value and add
+                    it to the COMap object.
 
                     append( std::string key, long long value ) - Create a new COInteger object from the value and
                     add it to the COMap object.
@@ -679,11 +682,11 @@ Dependent Libraries:The main dependent third party library that is required for 
                     Object.
 
                     findElement( const char *str ) - Find and return a pointer to an element by looking for the
-                    name.  Note that if str has a period (.) or a forward slash (/) in it, it is considered a “path”
-                    with the dot or slash being a delimiter.  And the name is considered the first segment before
-                    the delimiter. If the item is found and it is a COMap type the first segment is removed from the
-                    str and the shortened name is passed to to the new object to be found.  If the item is an
-                    COArray the delimiter is a colon (:) followed by a number which is an index.
+                    name.  Note that if str has a period (.) or a forward slash (/) in it, it is considered a
+                    “path” with the dot or slash being a delimiter.  And the name is considered the first segment
+                    before the delimiter. If the item is found and it is a COMap type the first segment is removed
+                    from the str and the shortened name is passed to to the new object to be found.  If the item
+                    is an COArray the delimiter is a colon (:) followed by a number which is an index.
 
                     findElement( const char *str ) - Find and return a pointer to an element by looking for the
                     name.  In this case the name is not considered a “path” and must be equal to the name in the
@@ -693,8 +696,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     *s ) - Same as the findElement( const char *str) method.
 
                     findCaseElement( const char *str ), findCaseElement( const std::string &str ), findCaseElement(
-                    const std::string *str) – Same as findElement, but ignore the case of the characters while doing
-                    the search.
+                    const std::string *str) – Same as findElement, but ignore the case of the characters while
+                    doing the search.
 
                     toNetString() - creates and returns a std::string pointer to a TNetString representation of the
                     value. (Should to be deleted)
@@ -707,8 +710,8 @@ Dependent Libraries:The main dependent third party library that is required for 
                     ideal for sending as a message. (Returned value should to be deleted)
 
                     upDate( COMap *map, const char *name ) - This is used to update a COMap with data from another
-                    COMap.  The name allows the update operation to be performed on an object in the map rather than
-                    the map as a whole.
+                    COMap.  The name allows the update operation to be performed on an object in the map rather
+                    than the map as a whole.
 
                     merge( COMap *map, const char *name ) - Used to combine two COMaps into one.
 
