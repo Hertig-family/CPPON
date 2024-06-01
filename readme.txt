@@ -8,26 +8,39 @@
                     its fundamental purpose is to do for C++ what JSON does for JavaScript its name has recently 
                     been changed to what it is now.
                    
-        What it is: It is a C++ Shared Library which implements a class hierarchy representing a JSON message.  It
-                    can take a JSON message and insatiate a C++ class structure representing all the elements of 
+        What it is: It is a C++ Shared Library which implements a class hierarchy representing a JSON object.  It
+                    can take a JSON string and insatiate a C++ class structure representing all the elements of 
                     the message and allow them to be read/manipulated by the C++ program. The data objects and/or 
                     structure can be accessed/manipulated using “paths” in much the same way as it is in
                     JavaScript.
 
                     The class hierarchy is all derived from a single base class with two container classes and
-                    five primative objects representing float, integer, string, boolean, and the null data types.
-                    The two “container” classes which are implemented as a “std::map” and a “std::vector”
-                    (complete with iterators) can hold any of the object types.
+                    five primitive class objects representing float, integer, string, boolean, and the null data 
+                    types. The two “container” classes which are implemented using a “std::map” and a 
+                    “std::vector” (complete with iterators) can hold any of the object types.
 
                     Any valid JSON string or file can be parsed into a complete data structure with a single
                     command without the need to even know the messages contents. The system also works with
-                    TNetStrings (and certain XML if compiled with the option to do so.)  Of course the structure
-                    can also be created problematically either a string or built up element by element in the code.
+                    TNetStrings (and certain XML, if compiled with the option to do so.)  Of course the structure
+                    can also be created either using a string, character array or built up element by element in 
+                    the code.
+
                     (Note: When using TNetStrings or XML binary is supported but caution is advised when/if then
-                    attempting to convert it to JSON)
+                    attempting to convert it to JSON, however built in functions can be used to convert it to 
+                    base64 encoded data)
 
                     At any point a single method can be called to create a string or file from the hierarchy in 
                     either a verbose, human readable form or a compact (sans white space) form.
+
+        Disclaimer: This is written in C++ (or rather C with classes, if you will) not rust or JavaScript. While 
+                    it makes working with JSON messages easy and with the concept of "soft data structures" can 
+                    change the way you design applications, you can get into trouble and quickly learn the meaning 
+                    of "segfault".  Be careful not to do things like to instantiate an object on th stack and then
+                    append it to an object or append a member of one object in another because the system will 
+                    attempt to destroy it twice.
+
+                    As they say: "Play stupid games, win stupid prizes".  It's always good to check your code with
+                    something like valgrind with leak-check=full to be sure you aren't up for any such prizes.
 
            History: As earlier stated, This started in early 2010 as a means of working with XML encoded messages.
                     But as XML is very flexible it often required customization depending on the message structure/
