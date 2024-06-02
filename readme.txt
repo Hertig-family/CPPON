@@ -35,12 +35,36 @@
         Disclaimer: This is written in C++ (or rather C with classes, if you will) not rust or JavaScript. While 
                     it makes working with JSON messages easy and with the concept of "soft data structures" can 
                     change the way you design applications, you can get into trouble and quickly learn the meaning 
-                    of "segfault".  Be careful not to do things like to instantiate an object on th stack and then
+                    of "segfault".  Be careful not to do things like to instantiate an object on the stack and then
                     append it to an object or append a member of one object in another because the system will 
                     attempt to destroy it twice.
 
                     As they say: "Play stupid games, win stupid prizes".  It's always good to check your code with
                     something like valgrind with leak-check=full to be sure you aren't up for any such prizes.
+
+      Installation: Sorry, it has been a long time since I have written an autoconf configure script.  This code
+                    has always been used in an eclipse like IDE.  There is a makefile in the Release directory that 
+                    should work for you but you need to edit the CppON.hpp file and set the #define SIXTY_FOUR_BIT
+                    value to 1 if you are compiling for a 64 bit processor, 0 for 32 bit.  Also set HAS_XML to 1 if
+                    you have the libxml2 library and need XML support.
+       
+                    If you only need to work with JSON and only need single application support all you need is the 
+                    CppON.cpp and CppON.hpp files.  The library will build just fine without the other classes.
+
+                    In eclipse just create a C++ managed build project and select “Shared Library” Empty Project.
+                    I call the project name CPPON. After the project is created Right click on the project and
+                    select Properties. I usually select the ISO C++ (-std=c++14) Dialect.  But you must select 
+                    -fPIC under Miscellaneous for C++ Compiler.
+	
+                    For basic support and single application use you just need the CppON.cpp and CppON.hpp files.
+                    Add the SCppObj.cpp and ScppObj.hpp files for to create and use the shared memory structure.
+                    Then if you want the local image class then add the LocalCppObj.cpp and LocalCppObj.hpp files.
+
+                    However much support you want, it will all be built into the libCPPON.so file.  Link against it
+                    and include the high level support header file you need. I.E CppON.hpp if you only need JSON
+                    support, ScppObj.cpp if you  are accessing the shared memory object and LocalCppObj.cpp if you
+                    want complete fuctionality.
+                        
 
            History: As earlier stated, This started in early 2010 as a means of working with XML encoded messages.
                     But as XML is very flexible it often required customization depending on the message structure/
