@@ -636,6 +636,8 @@ public:
 											// cppcheck-suppress noExplicitConstructor
 											COArray( const char *str );
 											// cppcheck-suppress noExplicitConstructor
+											COArray( const char *path, const char *file );
+											// cppcheck-suppress noExplicitConstructor
 											COArray( ) : CppON( ARRAY_CPPON_OBJ_TYPE ) { data = new std::vector<CppON *>(); }
 											// cppcheck-suppress noExplicitConstructor
 											COArray( std::vector<CppON *> &v ) : CppON( ARRAY_CPPON_OBJ_TYPE ){ data = new std::vector<CppON *>( v ); }
@@ -685,6 +687,8 @@ public:
 			void						dump( FILE *fp = stderr ) override { std::string indent; dump( indent, fp ); }
 			void						cdump( FILE *fp = stderr ) override ;
 			COArray						*diff( COArray &newObj, const char *name = NULL);
+private:
+			void							parseData( const char *str );
 };
 
 #endif /* CPPON_HPP_ */

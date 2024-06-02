@@ -2180,7 +2180,6 @@ COMap::COMap( const char *path, const char *file ): CppON( MAP_CPPON_OBJ_TYPE )
 	} else {
         fprintf( stderr, "%s[%.4u]: Failed to open JSON FILE \"%s\"",__FILE__, __LINE__, p.c_str() );
 	}
-
 }
 
 COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
@@ -4054,8 +4053,7 @@ COArray::COArray( COArray & at ) : CppON( ARRAY_CPPON_OBJ_TYPE )
         }
     }
 }
-
-COArray::COArray( const char *str ): CppON( ARRAY_CPPON_OBJ_TYPE )
+void COArray::parseData( const char *str )
 {
     if( str )
     {
@@ -4064,9 +4062,6 @@ COArray::COArray( const char *str ): CppON( ARRAY_CPPON_OBJ_TYPE )
         char          *np;
         int           cnt = strtol( str, &np, 0 );      // Check to see if it is a tnetstring
         string        tabs("");
-
-        data = new vector<CppON *>();
-        siz = 0;
 
         if( np )
         {
@@ -4106,10 +4101,64 @@ COArray::COArray( const char *str ): CppON( ARRAY_CPPON_OBJ_TYPE )
         {
             json_decref( root );
         }
-    } else {
-        data = new vector<CppON *>();
-        siz = 0;
     }
+}
+
+COArray::COArray( const char *path, const char *file ): CppON( ARRAY_CPPON_OBJ_TYPE )
+{
+	struct stat     _stat;
+	std::string p( path );
+	FILE    *fp;
+
+    data = new vector<CppON *>();
+    siz = 0;
+
+	if( '/' != p.back() )
+	{
+		p += '/';
+	}
+	p.append( file );
+
+	if( ! stat( p.c_str(), &_stat ) && ! ( _stat.st_mode & DIRECTORY_BIT ) && (fp = fopen( p.c_str(), "r" ) ) )
+	{
+	    int     sz = 1024;
+	    char    *buf,*bSave;
+	    int     rd = 0;
+	    int     c;
+
+	    if( !( buf = (char *) malloc( sz ) ) )
+	    {
+	        fclose( fp );
+	        fprintf( stderr, "%s[%.4u]: Failed to allocate memory",__FILE__, __LINE__ );
+	    }
+	    while( EOF != ( c = fgetc( fp ) ) )
+	    {
+	        buf[ rd++ ] = ( char ) c;
+	        if( rd == sz )
+	        {
+	            if( !( buf = (char *) realloc( (void *) (bSave = buf ), sz += 512 ) ) )
+	            {
+	    	        fprintf( stderr, "%s[%.4u]: Failed to reallocate memory: %d bytes!",__FILE__, __LINE__, sz );
+	                free( bSave );
+	            }
+	        }
+	    }
+	    buf[ rd ] = '\0';
+	    fclose( fp );
+
+	    parseData( buf );
+
+	    free(buf );
+	} else {
+        fprintf( stderr, "%s[%.4u]: Failed to open JSON FILE \"%s\"",__FILE__, __LINE__, p.c_str() );
+	}
+}
+
+COArray::COArray( const char *str ): CppON( ARRAY_CPPON_OBJ_TYPE )
+{
+    data = new vector<CppON *>();
+    siz = 0;
+    parseData( str );
 }
 
 void COArray::clear( )

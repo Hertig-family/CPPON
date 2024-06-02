@@ -2663,7 +2663,7 @@ void SCppObj::printStructList( STRUCT_LISTS *lst, std::string indent )
 			break;
 		case SL_TYPE_INT64:
 #if SIXTY_FOUR_BIT
-			fprintf( stderr, "%.8llX\n",*((uint64_t*)( ((uint64_t ) basePtr ) + (uint64_t ) lst->offset ) ) );
+			fprintf( stderr, "%.8lX\n",*((uint64_t*)( ((uint64_t ) basePtr ) + (uint64_t ) lst->offset ) ) );
 #else
 			fprintf( stderr, "%.8llX\n",*((uint64_t*)( ((uint64_t ) basePtr ) + (uint64_t ) lst->offset ) ) );
 #endif

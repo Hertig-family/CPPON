@@ -519,6 +519,18 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     = operator is used to set the size and value of the COInteger based on the data type and value
                     of the number it is set to.
+                    
+                    += operator allows various types of integers to be added to the COInteger returning the result 
+                    in the same type.
+
+                    -= operator allows various types of integers to be subtracted from the COInteger returning the
+                    result in the same type.
+
+                    *= operator allows various types of integers to be multiplied to the COInteger returning the
+                    result in the same type.
+
+                    /= operator allows various types of integers to be divided from the COInteger returning the
+                    result in the same type.
 
                     longValue() - Returns the value, no matter what size it is, as a long long.
 
@@ -546,6 +558,15 @@ Dependent Libraries:The main dependent third party library that is required for 
                     an unsigned character.
 
                     = operator allows the value to be set to a given double value or the value of a CODouble.
+
+                    += operator allows a double value to be added to the CODouble object returning the result
+
+                    -= operator allows a double value to be subtracted from the CODouble object returning the
+                    result,
+
+                    *= operator allows a double value to be multiplied to the CODouble object returning the result
+
+                    /= operator allows a double value to be divide from the CODouble object returning the result
 
                     set( const double &d ) -  Allows the value to be set in a method. (same as = ).
 
@@ -740,6 +761,9 @@ Dependent Libraries:The main dependent third party library that is required for 
 
                     COArray( std::vector< CppON *> &v ) - This constructor is used to create a COArray from just a
                     vector of CppON object pointers.
+
+                    COArray( const char *path, const char *file) – If a file is know to hold JSON data that
+                    represents an array object, it can be instantiated by giving it the path and file.
 
                     value() - Return a pointer to the actual vector that holds the data.
 
