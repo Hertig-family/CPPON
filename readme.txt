@@ -108,6 +108,45 @@
 
                     Of course the response is in the form of a CPPON instance which can of course be either
                     iterated through or used to produce a JSON string to be sent as a message.
+
+ “soft structures”: In the world of ground station equipment you quickly learn that each customer/site requires 
+                    different equipment and configuration. Developing and deploying different code releases for
+                    each configuration is a logistics nightmare.  Often attempts are made to store the
+                    configuration in files or databases and build data structures with the programs which can often
+                    be a daunting task, especially when a new component is introduced.
+
+                    What was discovered with this libraries ability to instantiate a C++ class hierarchy and access 
+                    the data through strings, was what we call “soft structures”.  The configuration and state of
+                    a system can be defined in a human readable JSON file and then created at run-time without 
+                    having to modify firmware.
+	
+                    The best way to explain this is to explain how we use it.  We actually have a utility program
+                    that creates the JSON file by stepping the user the a sequence of questions. (The first time
+                    it is run the default answers are supplied by a hard-coded JSON string but than the actual 
+                    responses are stored in a JSON file to be used if/when the utility is run again.)  In the
+                    case of one of our ground systems the output from this configuration utility are a couple of
+                    database tables and a JSON configuration file.  FWIW: This utility can be/is run anytime 
+                    the configuration is modified or a firmware upgrade is preformed.  (In the case of the firmware
+                    upgrade, it is run in the background using all the saved responses.)
+
+                    The JSON file that used to create the “soft structure” has multiple sections. Where the primary
+                    section is a “configuration” object that list all the possible equipment like feed_1, feed_2, 
+                    hpa, tsp_1, demod_1, demod_2, azimuth_axis, elevation_axis, …  It tells the system if the 
+                    component is install, its type and other pertinent information.  Then there would be a
+                    “settings” section listing each installed device, a “status” section and possibly a sections
+                    dedicated to each device.
+
+                    This JSON file is read at startup and use to build the whole system data structures.  In the
+                    case of our systems use the shared object to share the data with all the applications in the
+                    system.  Many organizations will use a combination of disk space and message queues to share
+                    this information but we find it so much easier and faster to do it this way.  Yes, we still 
+                    use databases disk space and message queues to send commands (almost always in JSON) but
+                    sharing data and status has never been so easy. 
+
+                    Code has to be written for to handle each possible device but only the code defined as
+                    installed in the configuration section is used.  The only difficult task is having the
+                    configuration utility create all the supporting items in the JSON file. 
+
            example: /*
                      * A little demonstration program to show some features of the C++ Object Notation library
                      * (CPPON).  This program takes a string as if it was received as a JSON message from an
