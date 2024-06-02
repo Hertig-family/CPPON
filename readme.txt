@@ -143,9 +143,9 @@
                     use databases disk space and message queues to send commands (almost always in JSON) but
                     sharing data and status has never been so easy. 
 
-                    Code has to be written for to handle each possible device but only the code defined as
-                    installed in the configuration section is used.  The only difficult task is having the
-                    configuration utility create all the supporting items in the JSON file. 
+                    Code has to be written to handle each possible device but only the code defined as installed 
+                    in the configuration section is used.  The only difficult task is having the configuration 
+                    utility create all the supporting items in the JSON file needed by the device software. 
 
            example: /*
                      * A little demonstration program to show some features of the C++ Object Notation library
