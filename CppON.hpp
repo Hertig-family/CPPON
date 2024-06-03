@@ -371,28 +371,34 @@ public:
 			bool							operator != ( COInteger &newObj ) { return( ! ( *this == newObj ) );}
 											// cppcheck-suppress constParameter
 			bool							operator != ( COInteger *newObj ){ return( ! ( *this == *newObj ) );}
-			int								operator=( char i ){ if(data) delete( (int*)data ); data = new(char); *((char*) data ) = i; siz = sizeof( char ); return( i ); }
-			int								operator=( short i ){ if(data) delete( (int*)data ); data = new(short); *((short*) data ) = i; siz = sizeof( short ); return( i ); }
-			int								operator=( long i ){ if(data) delete( (int*)data ); data = new(long); *((long*) data ) = i; siz = sizeof( long ); return( i ); }
-			int								operator=( int i ){ if(data) delete( (int*)data ); data = new(int); *((int*) data ) = i; siz = sizeof( int ); return( i ); }
-			long long						operator=(long long i){ if(data) delete((long long*)data);data=new(long long); *((long long*) data ) = i; siz = sizeof( long long ); return( i ); }
 
-			long long						operator += (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_ADD ); }
-			long long						operator -= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			long long						operator *= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			long long						operator /= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			uint64_t						operator += (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_ADD ); }
-			uint64_t						operator -= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			uint64_t						operator *= (uint64_t val ){ return  doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			uint64_t						operator /= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			int32_t 						operator += (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
-			int32_t							operator -= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			int32_t							operator *= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			int32_t							operator /= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			uint32_t 						operator += (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
-			uint32_t						operator -= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			uint32_t						operator *= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			uint32_t						operator /= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+template<typename T> T                      operator = (const T t ) { if( data ) delete( ( T* ) data ); data = new ( T ); *(( T *) data ) = t; siz = sizeof( T ); return t; }
+//			int								operator=( char i ){ if(data) delete( (int*)data ); data = new(char); *((char*) data ) = i; siz = sizeof( char ); return( i ); }
+//			int								operator=( short i ){ if(data) delete( (int*)data ); data = new(short); *((short*) data ) = i; siz = sizeof( short ); return( i ); }
+//			int								operator=( long i ){ if(data) delete( (int*)data ); data = new(long); *((long*) data ) = i; siz = sizeof( long ); return( i ); }
+//			int								operator=( int i ){ if(data) delete( (int*)data ); data = new(int); *((int*) data ) = i; siz = sizeof( int ); return( i ); }
+//			long long						operator=(long long i){ if(data) delete((long long*)data);data=new(long long); *((long long*) data ) = i; siz = sizeof( long long ); return( i ); }
+
+template<typename T> T						operator += ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_ADD ); }
+template<typename T> T						operator -= ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_SUBTRACT ); }
+template<typename T> T						operator *= ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_MULTIPLY ); }
+template<typename T> T						operator /= ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_DIVIDE ); }
+//			long long						operator += (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_ADD ); }
+//			long long						operator -= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			long long						operator *= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			long long						operator /= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+//			uint64_t						operator += (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_ADD ); }
+//			uint64_t						operator -= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			uint64_t						operator *= (uint64_t val ){ return  doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			uint64_t						operator /= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+//			int32_t 						operator += (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
+//			int32_t							operator -= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			int32_t							operator *= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			int32_t							operator /= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+//			uint32_t 						operator += (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
+//			uint32_t						operator -= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			uint32_t						operator *= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			uint32_t						operator /= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
 			char 							operator += (char val ){ return (char) doOperation( (uint64_t) val, CPPON_ADD ); }
 			char							operator -= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
 			char							operator *= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
