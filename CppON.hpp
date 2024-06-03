@@ -229,13 +229,9 @@ enum CppONType
 enum CppONOperator
 {
 	CPPON_ADD,
-	CPPON_U_ADD,
 	CPPON_SUBTRACT,
-	CPPON_U_SUBTRACT,
 	CPPON_MULTIPLY,
-	CPPON_U_MULTIPLY,
-	CPPON_DIVIDE,
-	CPPON_U_DIVIDE
+	CPPON_DIVIDE
 };
 
 /*
@@ -350,17 +346,19 @@ protected:
  * types of integers sub classed from a single one but I chose to do it this way.
  *
  */
+//template<typename T>
 
 class COInteger : public CppON
 {
 public:
 											COInteger( COInteger &it );
 											COInteger( COInteger *it = NULL );
-											COInteger( char i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { data = new ( char ); *((char*) data ) = i; siz = sizeof( char);}
-											COInteger( short i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { data = new ( short ); *((short*) data) = i; siz = sizeof( short );}
-											COInteger( int i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { data = new (int); *((int*) data) = i; siz = sizeof(int);}
-											COInteger( long i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { data = new (long); *((long*) data) = i; siz = sizeof(long);}
-											COInteger( long long i = 0) : CppON( INTEGER_CPPON_OBJ_TYPE ) { data = new(long long); *((long long *) data ) = i; siz = sizeof(long long); }
+											COInteger( char i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( char ); *((char*) data ) = i; siz = sizeof( char);}
+											COInteger( int16_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( int16_t ); *((int16_t*) data) = i; siz = sizeof( int16_t );}
+											COInteger( int32_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new (int32_t); *((int32_t*) data) = i; siz = sizeof(int32_t);}
+											COInteger( uint32_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true; data = new (uint32_t); *((uint32_t*) data) = i; siz = sizeof(uint32_t);}
+											COInteger( int64_t i = 0) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new(int64_t); *((int64_t *) data ) = i; siz = sizeof(int64_t); }
+											COInteger( uint64_t i = 0) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new(uint64_t); *((uint64_t *) data ) = i; siz = sizeof(uint64_t); }
 			COInteger						*operator=(COInteger &val );
 											// cppcheck-suppress constParameter
 			COInteger						*operator=(COInteger *val ) { return( *this = *val );}
@@ -376,13 +374,24 @@ template<typename T> T                      operator = (const T t ) { if( data )
 //			int								operator=( char i ){ if(data) delete( (int*)data ); data = new(char); *((char*) data ) = i; siz = sizeof( char ); return( i ); }
 //			int								operator=( short i ){ if(data) delete( (int*)data ); data = new(short); *((short*) data ) = i; siz = sizeof( short ); return( i ); }
 //			int								operator=( long i ){ if(data) delete( (int*)data ); data = new(long); *((long*) data ) = i; siz = sizeof( long ); return( i ); }
+<<<<<<< HEAD
+//			int32_t							operator=( int32_t i ){ if(data) delete( (int32_t*)data ); data = new(int32_t); *((int32_t*) data ) = i; siz = sizeof( int32_t ); return( i ); }
+=======
 //			int								operator=( int i ){ if(data) delete( (int*)data ); data = new(int); *((int*) data ) = i; siz = sizeof( int ); return( i ); }
+>>>>>>> 63be8b7697ec4bd9b60a94d73e998684583c8fcc
 //			long long						operator=(long long i){ if(data) delete((long long*)data);data=new(long long); *((long long*) data ) = i; siz = sizeof( long long ); return( i ); }
 
 template<typename T> T						operator += ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_ADD ); }
 template<typename T> T						operator -= ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_SUBTRACT ); }
 template<typename T> T						operator *= ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_MULTIPLY ); }
 template<typename T> T						operator /= ( const T t){ return (int64_t) doOperation( (uint64_t) t, CPPON_DIVIDE ); }
+<<<<<<< HEAD
+
+//			int64_t							operator += (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_ADD ); }
+//			int64_t							operator -= (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			int64_t							operator *= (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			int64_t							operator /= (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+=======
 //			long long						operator += (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_ADD ); }
 //			long long						operator -= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
 //			long long						operator *= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
@@ -391,10 +400,21 @@ template<typename T> T						operator /= ( const T t){ return (int64_t) doOperati
 //			uint64_t						operator -= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
 //			uint64_t						operator *= (uint64_t val ){ return  doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
 //			uint64_t						operator /= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+>>>>>>> 63be8b7697ec4bd9b60a94d73e998684583c8fcc
 //			int32_t 						operator += (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
 //			int32_t							operator -= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
 //			int32_t							operator *= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
 //			int32_t							operator /= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+<<<<<<< HEAD
+//			char 							operator += (char val ){ return (char) doOperation( (uint64_t) val, CPPON_ADD ); }
+//			char							operator -= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			char							operator *= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			char							operator /= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+//			short 							operator += (short val ){ return (short) doOperation( (uint64_t) val, CPPON_ADD ); }
+//			short							operator -= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
+//			short							operator *= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
+//			short							operator /= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+=======
 //			uint32_t 						operator += (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
 //			uint32_t						operator -= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
 //			uint32_t						operator *= (uint32_t val ){ return (uint32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
@@ -407,12 +427,13 @@ template<typename T> T						operator /= ( const T t){ return (int64_t) doOperati
 			short							operator -= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
 			short							operator *= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
 			short							operator /= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
+>>>>>>> 63be8b7697ec4bd9b60a94d73e998684583c8fcc
 
 			int								size() override { return ( data ) ? siz : 0;}               // return the 1 if it is defined
-			long long						longValue();                                                // get the long long value of the object
+			int64_t							longValue();                                                // get the long long value of the object
 			char							charValue(){ return (data) ? *((char *)data) : 0; }         // get the long long value of the object
 			short							shortValue(){ return (data) ? *((short *)data) : 0; }       // get the long long value of the object
-			int								intValue(){ return (data) ? *((int *)data) : 0; }           // get the long long value of the object
+			int32_t							intValue(){ return (data) ? *((int32_t *)data) : 0; }           // get the long long value of the object
 			std::string						*toNetString();                                             // convert to net string format
 			std::string						*toJsonString();                                            // convert to json string format
 			void							dump( FILE *fp = stderr ) override ;
@@ -420,6 +441,8 @@ template<typename T> T						operator /= ( const T t){ return (int64_t) doOperati
 			const char						*c_str();
 			CppON							*diff( CppON &newObj );
 private:
+
+			bool							unSigned;
 			uint64_t						doOperation( uint64_t val, CppONOperator op );
 };
 
@@ -601,7 +624,7 @@ std::map<std::string,CppON*>::iterator		end() { return ((std::map< std::string, 
 			int								append( std::string key, std::string value ){ return append( key, new COString( value ) ); }
 			int								append( std::string key, const char *value){ return append( key, new COString( value ) ); }
 			int								append( std::string key, double value ){ return append( key, new CODouble( value ) ); }
-			int								append( std::string key, long long value ){ return append( key, new COInteger( value ) );}
+			int								append( std::string key, int64_t value ){ return append( key, new COInteger( value ) );}
 			int								append( std::string key, int value ){ return append( key, new COInteger( value ) ); }
 			int								append( std::string key, bool value ){ return append( key, new COBoolean( value ) ); }
 			int								append( std::string key ){ return append( key, new CONull() ); }
@@ -668,7 +691,7 @@ public:
 			void							append( CppON *n ) { ( (std::vector < CppON *> *) data)->push_back( n ); }
 			void							append( std::string value ){ append( new COString( value ) ); }
 			void							append( double value ){ append( new CODouble( value ) ); }
-			void							append( long long value ){ append( new COInteger( value ) ); }
+			void							append( int64_t value ){ append( new COInteger( value ) ); }
 			void							append( int value ){ append( new COInteger( value ) ); }
 			void							append( bool value ) { append( new COBoolean( value ) ); }
 			void							push_back( CppON *n ){ ( (std::vector < CppON *> *) data)->push_back( n ); }
