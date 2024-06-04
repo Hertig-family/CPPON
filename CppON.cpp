@@ -397,7 +397,7 @@ CppON *CppON::guessDataType( const char *str )
     switch( _eType )
     {
         case INTEGER_CPPON_OBJ_TYPE:
-            rtn = new COInteger( strtoll( str, NULL, 10 ) );
+            rtn = new COInteger( (uint64_t) strtoll( str, NULL, 10 ) );
             break;
 
         case DOUBLE_CPPON_OBJ_TYPE:
@@ -651,7 +651,7 @@ CppON *CppON::parseJson( json_t *ob, string &tabs )
         } else if( json_is_number( ob ) ) {
             if( json_is_integer( ob) )
             {
-                rtn = new COInteger( (long long) json_integer_value( ob ) );
+                rtn = new COInteger( (uint64_t) json_integer_value( ob ) );
             } else if( json_is_real( ob ) ) {
                 rtn = new CODouble( json_real_value( ob ) );
             }
@@ -1429,7 +1429,7 @@ CppON *CppON::parse( const char *str, char **rstr )
 
             case '#':
                 {
-                    long long ia = strtoll( ptr, NULL, 10);
+                    uint64_t ia = strtoll( ptr, NULL, 10);
                     rtn = new COInteger( ia );
                 }
                 break;
@@ -2392,7 +2392,7 @@ void COMap::merge( COMap *targetObj, const char *name )
                         m->erase( it );                                                 //      Delete it and add the new object
                         delete myObj;
                         // cppcheck-suppress cstyleCast
-                        append( targetStr->c_str(), new COInteger( (long long)(COInteger *)( ti->second )->toLongInt( ) ) );
+                        append( targetStr->c_str(), new COInteger( (uint64_t)(COInteger *)( ti->second )->toLongInt( ) ) );
                     }
                     break;
                 case DOUBLE_CPPON_OBJ_TYPE:                                             //  If it is a double (like an integer )
@@ -3543,8 +3543,8 @@ static void appendTag( string name, CppON *obj, COMap *rtn, CppON *n )
             case INTEGER_CPPON_OBJ_TYPE:
                 {
                     // cppcheck-suppress cstyleCast
-                    long long v = ((COInteger *) n)->toLongInt();
-                    long long r;
+                    uint64_t v = ((COInteger *) n)->toLongInt();
+                    uint64_t r;
                     switch( obj->type() )
                     {
                         case INTEGER_CPPON_OBJ_TYPE:
@@ -5382,7 +5382,7 @@ COInteger::COInteger( COInteger &it ) : CppON( INTEGER_CPPON_OBJ_TYPE )
     }
 }
 
-long long COInteger::longValue()
+int64_t COInteger::longValue()
 {
     long long rtn = 0;
     if( data )
@@ -5524,154 +5524,146 @@ void COInteger::cdump( FILE *fp )
 
 uint64_t COInteger::doOperation( uint64_t val, CppONOperator op )
 {
-	uint64_t rtn = 0;
+	int64_t rtn = 0;
+//	fprintf( stderr, "size: %d", siz );
 	switch( siz )
 	{
-		case 8:
+		case 1:
 			switch( op )
 			{
 				case CPPON_ADD:
 					*((char*) data ) += (char) val;
 					rtn = (int64_t) *((char*) data );
 					break;
-				case CPPON_U_ADD:
-					*((unsigned char*) data ) += (unsigned char) val;
-					rtn = (uint64_t) *((unsigned char*) data );
-					break;
 				case CPPON_SUBTRACT:
 					*((char*) data ) -= (char) val;
 					rtn = (int64_t) *((char*) data );
-					break;
-				case CPPON_U_SUBTRACT:
-					*((unsigned char*) data ) -= (unsigned char) val;
-					rtn = (uint64_t) *((unsigned char*) data );
 					break;
 				case CPPON_MULTIPLY:
 					*((char*) data ) *= (char) val;
 					rtn = (int64_t) *((char*) data );
 					break;
-				case CPPON_U_MULTIPLY:
-					*((unsigned char*) data ) *= (unsigned char) val;
-					rtn = (uint64_t) *((unsigned char*) data );
-					break;
 				case CPPON_DIVIDE:
 					*((char*) data ) /= (char) val;
 					rtn = (int64_t) *((char*) data );
 					break;
-				case CPPON_U_DIVIDE:
-					*((unsigned char*) data ) /= (unsigned char) val;
-					rtn = (uint64_t) *((unsigned char*) data );
-					break;
 			}
 			break;
-		case 16:
+		case 2:
 			switch( op )
 			{
 				case CPPON_ADD:
 					*((short*) data ) += (short) val;
 					rtn = (int64_t) *((short*) data );
 					break;
-				case CPPON_U_ADD:
-					*((short*) data ) += (short) val;
-					rtn = (uint64_t) *((unsigned short*) data );
-					break;
 				case CPPON_SUBTRACT:
 					*((short*) data ) -= (short) val;
 					rtn = (int64_t) *((short*) data );
-					break;
-				case CPPON_U_SUBTRACT:
-					*((short*) data ) -= (short) val;
-					rtn = (uint64_t) *((unsigned short*) data );
 					break;
 				case CPPON_MULTIPLY:
 					*((short*) data ) *= (short) val;
 					rtn = (int64_t) *((short*) data );
 					break;
-				case CPPON_U_MULTIPLY:
-					*((short*) data ) *= (short) val;
-					rtn = (uint64_t) *((unsigned short*) data );
-					break;
 				case CPPON_DIVIDE:
 					*((short*) data ) /= (short) val;
 					rtn = (int64_t) *((short*) data );
 					break;
-				case CPPON_U_DIVIDE:
-					*((short*) data ) /= (short) val;
-					rtn = (uint64_t) *((unsigned short*) data );
-					break;
 			}
 			break;
-		case 32:
+		case 4:
 			switch( op )
 			{
 				case CPPON_ADD:
-					*((int32_t *) data ) += (int32_t) val;
-					rtn = (int64_t) *((int32_t*) data );
-					break;
-				case CPPON_U_ADD:
-					*((uint32_t *) data ) += (uint32_t) val;
-					rtn = (uint64_t) *((uint32_t*) data );
+///					fprintf( stderr, "Unsigned: %s, %d + %d\n", ((unSigned)?"true":"false"), *((uint32_t*) data), (uint32_t) val );
+					if( unSigned )
+					{
+						*((uint32_t *) data ) += (uint32_t) val;
+						rtn = (uint64_t) *((uint32_t*) data );
+						fprintf( stderr, "rtn = 0x%lX\n", rtn );
+					} else {
+						*((int32_t *) data ) += (int32_t) val;
+						rtn = (int64_t) *((int32_t*) data );
+					}
 					break;
 				case CPPON_SUBTRACT:
-					*((int32_t*) data ) -= (int32_t) val;
-					rtn = (int64_t) *((int32_t*) data );
-					break;
-				case CPPON_U_SUBTRACT:
-					*((int32_t*) data ) -= (uint32_t) val;
-					rtn = (uint64_t) *((uint32_t*) data );
+	//				fprintf( stderr, "Unsigned: %s, %d - %d\n", ((unSigned)?"true":"false"), *((uint32_t*) data), (uint32_t) val );
+					if( unSigned )
+					{
+						*((uint32_t*) data ) -= (uint32_t) val;
+						rtn = (uint64_t) *((uint32_t*) data );
+					} else {
+						*((int32_t*) data ) -= (int32_t) val;
+						rtn = (int64_t) *((int32_t*) data );
+					}
 					break;
 				case CPPON_MULTIPLY:
-					*((int32_t*) data ) *= (int32_t) val;
-					rtn = (int64_t) *((int32_t*) data );
-					break;
-				case CPPON_U_MULTIPLY:
-					*((uint32_t*) data ) *= (uint32_t) val;
-					rtn = (uint64_t) *((uint32_t*) data );
+	//				fprintf( stderr, "Unsigned: %s, %d * %d\n", ((unSigned)?"true":"false"), *((uint32_t*) data), (uint32_t) val );
+					if( unSigned )
+					{
+						*((uint32_t*) data ) *= (uint32_t) val;
+						rtn = (uint64_t) *((uint32_t*) data );
+					} else {
+						*((int32_t*) data ) *= (int32_t) val;
+						rtn = (int64_t) *((int32_t*) data );
+					}
 					break;
 				case CPPON_DIVIDE:
-					*((int32_t*) data ) /= (int32_t) val;
-					rtn = (int64_t) *((int32_t*) data );
-					break;
-				case CPPON_U_DIVIDE:
-					*((uint32_t*) data ) /= (uint32_t) val;
-					rtn = (uint64_t) *((uint32_t*) data );
+//					fprintf( stderr, "Unsigned: %s, %d / %d\n", ((unSigned)?"true":"false"), *((uint32_t*) data), (uint32_t) val );
+					if( unSigned )
+					{
+						*((uint32_t*) data ) /= (uint32_t) val;
+						rtn = (uint64_t) *((uint32_t*) data );
+					} else {
+						*((int32_t*) data ) /= (int32_t) val;
+						rtn = (int64_t) *((int32_t*) data );
+					}
 					break;
 			}
 			break;
-		case 64:
+		case 8:
 			switch( op )
 			{
 				case CPPON_ADD:
-					*((int64_t *) data ) += (int64_t) val;
-					rtn = (uint64_t) *((int64_t*) data );
-					break;
-				case CPPON_U_ADD:
-					*((uint64_t *) data ) += (uint64_t) val;
-					rtn = (uint64_t) *((uint64_t*) data );
+					if( unSigned )
+					{
+						*((uint64_t *) data ) += (uint64_t) val;
+						rtn = *((uint64_t *) data );
+					} else {
+//						fprintf( stderr, "%ld + %ld = ", *((int64_t *) data ), (int64_t)val );
+						*((int64_t *) data ) += (int64_t) val;
+						rtn = *((int64_t *) data );
+//						fprintf( stderr, "%ld\n", rtn );
+					}
 					break;
 				case CPPON_SUBTRACT:
-					*((int32_t*) data ) -= (int64_t) val;
-					rtn = (int64_t) *((int64_t*) data );
-					break;
-				case CPPON_U_SUBTRACT:
-					*((uint32_t*) data ) -= (uint64_t) val;
-					rtn = (uint64_t) *((uint64_t*) data );
+					if( unSigned )
+					{
+						*((uint64_t*) data ) -= (uint64_t) val;
+						rtn = *((uint64_t*) data );
+					} else {
+						*((int64_t*) data ) -= (int64_t) val;
+						rtn = *((int64_t*) data );
+					}
 					break;
 				case CPPON_MULTIPLY:
-					*((int32_t*) data ) *= (int64_t) val;
-					rtn = (int64_t) *((int64_t*) data );
-					break;
-				case CPPON_U_MULTIPLY:
-					*((uint32_t*) data ) *= (uint64_t) val;
-					rtn = (uint64_t) *((uint64_t*) data );
+					if( unSigned )
+					{
+						*((uint64_t*) data ) *= (uint64_t) val;
+						rtn = *((uint64_t*) data );
+					} else {
+						*((int64_t*) data ) *= (int64_t) val;
+						rtn = *((int64_t*) data );
+					}
 					break;
 				case CPPON_DIVIDE:
-					*((int32_t*) data ) /= (int64_t) val;
-					rtn = (int64_t) *((int64_t*) data );
-					break;
-				case CPPON_U_DIVIDE:
-					*((uint32_t*) data ) /= (uint64_t) val;
-					rtn = (uint64_t) *((uint64_t*) data );
+					if( unSigned )
+					{
+						*((uint64_t*) data ) /= (uint64_t) val;
+						rtn = *((uint64_t*) data );
+					} else {
+						*((int64_t*) data ) /= (int64_t) val;
+						rtn = (int64_t) *((int64_t*) data );
+					}
 					break;
 			}
 			break;

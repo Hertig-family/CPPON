@@ -142,7 +142,7 @@ public:
 				CODouble				*toCODouble( STRUCT_LISTS *val ){ if( val && SL_TYPE_DOUBLE == val->type ) { return new CODouble( *( ( double *) ( ( (uint64_t ) basePtr ) + (uint64_t )val->offset) ) ); } return NULL; }
 				COString				*toCOString( STRUCT_LISTS *val ){ if( val && SL_TYPE_CHAR == val->type ) { return new COString( ( ( char *) ( ( (uint64_t ) basePtr ) + (uint64_t )val->offset) ) ); } return NULL; }
 				COBoolean				*toCOBoolean( STRUCT_LISTS *val ){ if( val && SL_TYPE_BOOL == val->type ) { return new COBoolean( *( ( bool *) ( ( (uint64_t ) basePtr ) + (uint64_t )val->offset) ) ); } return NULL; }
-				COInteger				*toJInt64( STRUCT_LISTS *val ){ if( val && SL_TYPE_INT64 == val->type ) { return  new COInteger( (long long) *( ( uint64_t *) ( ( (uint64_t ) basePtr ) + (uint64_t ) val->offset ) ) ); } return NULL; }
+				COInteger				*toJInt64( STRUCT_LISTS *val ){ if( val && SL_TYPE_INT64 == val->type ) { return  new COInteger( (uint64_t) *( ( uint64_t *) ( ( (uint64_t ) basePtr ) + (uint64_t ) val->offset ) ) ); } return NULL; }
 				COInteger				*toJInt32( STRUCT_LISTS *val ){ if( val && SL_TYPE_INT32 == val->type ) { return  new COInteger( (int) *( ( uint32_t *) ( ( (uint64_t ) basePtr ) + (uint64_t ) val->offset ) ) ); } return NULL; }
 				COInteger				*toJInt16( STRUCT_LISTS *val ){ if( val && SL_TYPE_INT16 == val->type ) { return  new COInteger( (int) *( ( uint16_t *) ( ( (uint64_t ) basePtr ) + (uint64_t ) val->offset ) ) ); } return NULL; }
 				COInteger				*toJInt8( STRUCT_LISTS *val ){ if( val && SL_TYPE_INT8 == val->type ) { return  new COInteger( (int) *( ( uint8_t *) ( ( (uint64_t ) basePtr ) + (uint64_t ) val->offset ) ) ); } return NULL; }

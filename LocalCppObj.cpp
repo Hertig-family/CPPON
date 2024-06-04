@@ -194,9 +194,9 @@ bool LocalCppObj::checkChanges( CppON *rtn, LOCAL_CPP_OBJ *objIn )
 						changes = true;
 						if( isMap )
 						{
-							((COMap * )rtn )->append( fromObj->name.c_str(), new COInteger( (long long)( *((int64_t*)(objIn->localObj ) ) = iShare ) ) );
+							((COMap * )rtn )->append( fromObj->name.c_str(), new COInteger( (uint64_t)( *((int64_t*)(objIn->localObj ) ) = iShare ) ) );
 						} else {
-							((COArray * )rtn )->append( new COInteger( (long long)(*((int64_t*)(objIn->localObj ) ) = iShare ) ) );
+							((COArray * )rtn )->append( new COInteger( (uint64_t)(*((int64_t*)(objIn->localObj ) ) = iShare ) ) );
 						}
 					}
 				}
