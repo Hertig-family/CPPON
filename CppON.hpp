@@ -353,8 +353,10 @@ class COInteger : public CppON
 public:
 											COInteger( COInteger &it );
 											COInteger( COInteger *it = NULL );
-											COInteger( char i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( char ); *((char*) data ) = i; siz = sizeof( char);}
+											COInteger( int8_t i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( int8_t ); *((int8_t*) data ) = i; siz = sizeof( int8_t );}
+											COInteger( uint8_t i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new ( uint8_t ); *((uint8_t*) data ) = i; siz = sizeof( uint8_t );}
 											COInteger( int16_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( int16_t ); *((int16_t*) data) = i; siz = sizeof( int16_t );}
+											COInteger( uint16_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new ( uint16_t ); *((uint16_t*) data) = i; siz = sizeof( uint16_t );}
 											COInteger( int32_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new (int32_t); *((int32_t*) data) = i; siz = sizeof(int32_t);}
 											COInteger( uint32_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new (uint32_t); *((uint32_t*) data) = i; siz = sizeof(uint32_t);}
 											COInteger( int64_t i = 0) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new(int64_t); *((int64_t *) data ) = i; siz = sizeof(int64_t); }
@@ -369,52 +371,18 @@ public:
 			bool							operator != ( COInteger &newObj ) { return( ! ( *this == newObj ) );}
 											// cppcheck-suppress constParameter
 			bool							operator != ( COInteger *newObj ){ return( ! ( *this == *newObj ) );}
-#if 1
 template<typename T> T                      operator = (const T t ) { if( data ) delete( ( T* ) data ); data = new ( T ); *(( T *) data ) = t; siz = sizeof( T ); return t; }
-template<typename T> T						operator += ( const T t){ return ( T ) doOperation( (uint64_t) t, CPPON_ADD ); }
-template<typename T> T						operator -= ( const T t){ return ( T ) doOperation( (uint64_t) t, CPPON_SUBTRACT ); }
-template<typename T> T						operator *= ( const T t){ return ( T ) doOperation( (uint64_t) t, CPPON_MULTIPLY ); }
-template<typename T> T						operator /= ( const T t){ return ( T ) doOperation( (uint64_t) t, CPPON_DIVIDE ); }
-#else
-			int								operator=( char i ){ if(data) delete( (int*)data ); data = new(char); *((char*) data ) = i; siz = sizeof( char ); return( i ); }
-			int								operator=( short i ){ if(data) delete( (int*)data ); data = new(short); *((short*) data ) = i; siz = sizeof( short ); return( i ); }
-			int								operator=( long i ){ if(data) delete( (int*)data ); data = new(long); *((long*) data ) = i; siz = sizeof( long ); return( i ); }
-			int32_t							operator=( int32_t i ){ if(data) delete( (int32_t*)data ); data = new(int32_t); *((int32_t*) data ) = i; siz = sizeof( int32_t ); return( i ); }
-			long long						operator=(long long i){ if(data) delete((long long*)data);data=new(long long); *((long long*) data ) = i; siz = sizeof( long long ); return( i ); }
-
-
-			int64_t							operator += (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_ADD ); }
-			int64_t							operator -= (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			int64_t							operator *= (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			int64_t							operator /= (int64_t val ){ return (int64_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			long long						operator += (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_ADD ); }
-			long long						operator -= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			long long						operator *= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			long long						operator /= (long long val ){ return (long long) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			uint64_t						operator += (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_ADD ); }
-			uint64_t						operator -= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			uint64_t						operator *= (uint64_t val ){ return  doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			uint64_t						operator /= (uint64_t val ){ return doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			int32_t 						operator += (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_ADD ); }
-			int32_t							operator -= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			int32_t							operator *= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			int32_t							operator /= (int32_t val ){ return (int32_t) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			char 							operator += (char val ){ return (char) doOperation( (uint64_t) val, CPPON_ADD ); }
-			char							operator -= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			char							operator *= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			char							operator /= (char val ){ return (char) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-			short 							operator += (short val ){ return (short) doOperation( (uint64_t) val, CPPON_ADD ); }
-			short							operator -= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_SUBTRACT ); }
-			short							operator *= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_MULTIPLY ); }
-			short							operator /= (short val ){ return (short) doOperation( (uint64_t) val, CPPON_DIVIDE ); }
-#endif
-			int								size() override { return ( data ) ? siz : 0;}               // return the 1 if it is defined
-			int64_t							longValue();                                                // get the long long value of the object
-			char							charValue(){ return (data) ? *((char *)data) : 0; }         // get the long long value of the object
-			short							shortValue(){ return (data) ? *((short *)data) : 0; }       // get the long long value of the object
-			int32_t							intValue(){ return (data) ? *((int32_t *)data) : 0; }           // get the long long value of the object
-			std::string						*toNetString();                                             // convert to net string format
-			std::string						*toJsonString();                                            // convert to json string format
+template<typename T> T						operator += ( const T t){ return ( T ) doOperation( sizeof( T ), (uint64_t) t, CPPON_ADD ); }
+template<typename T> T						operator -= ( const T t){ return ( T ) doOperation( sizeof( T ), (uint64_t) t, CPPON_SUBTRACT ); }
+template<typename T> T						operator *= ( const T t){ return ( T ) doOperation( sizeof( T ), (uint64_t) t, CPPON_MULTIPLY ); }
+template<typename T> T						operator /= ( const T t){ return ( T ) doOperation( sizeof( T ), (uint64_t) t, CPPON_DIVIDE ); }
+			int								size() override { return ( data ) ? siz : 0;}            																			// return the 1 if it is defined
+			int64_t							longValue();                                                																		// get the long long value of the object
+			int8_t							charValue(){int64_t l=longValue();if(l<-128){return -128;}else if(l>127){return 127;}return(int8_t)l;}         						// get the long long value of the object
+			int16_t							shortValue(){int64_t l=longValue();if(l<-32768){return -32768;}else if(l>32767){return 32767;}return(int16_t)l;}       				// get the long long value of the object
+			int32_t							intValue(){int64_t l=longValue();if(l<-2147483648){return -2147483648;}else if(l>0x7FFFFFFF){return 0x7FFFFFFF;}return(int32_t)l;}	// get the long long value of the object
+			std::string						*toNetString();                                             																		// convert to net string format
+			std::string						*toJsonString();                                            																		// convert to json string format
 			void							dump( FILE *fp = stderr ) override ;
 			void							cdump( FILE *fp = stderr ) override ;
 			const char						*c_str();
@@ -422,7 +390,7 @@ template<typename T> T						operator /= ( const T t){ return ( T ) doOperation( 
 private:
 
 			bool							unSigned;
-			uint64_t						doOperation( uint64_t val, CppONOperator op );
+			uint64_t						doOperation( unsigned sz, uint64_t val, CppONOperator op );
 };
 
 /*
