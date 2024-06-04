@@ -353,6 +353,10 @@ class COInteger : public CppON
 public:
 											COInteger( COInteger &it );
 											COInteger( COInteger *it = NULL );
+#if 1
+template<typename T>						COInteger(T i=0):CppON(INTEGER_CPPON_OBJ_TYPE){unSigned=true;if(std::is_same<T,int8_t>::value||std::is_same<T,int16_t>::value||std::is_same<T,int32_t>::value||std::is_same<T,int64_t>::value){unSigned = false;}data=new(T);*((T*)data)=i;siz=sizeof(T);}
+
+#else
 											COInteger( int8_t i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( int8_t ); *((int8_t*) data ) = i; siz = sizeof( int8_t );}
 											COInteger( uint8_t i ='\0' ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new ( uint8_t ); *((uint8_t*) data ) = i; siz = sizeof( uint8_t );}
 											COInteger( int16_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new ( int16_t ); *((int16_t*) data) = i; siz = sizeof( int16_t );}
@@ -361,6 +365,7 @@ public:
 											COInteger( uint32_t i = 0 ) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new (uint32_t); *((uint32_t*) data) = i; siz = sizeof(uint32_t);}
 											COInteger( int64_t i = 0) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = false;data = new(int64_t); *((int64_t *) data ) = i; siz = sizeof(int64_t); }
 											COInteger( uint64_t i = 0) : CppON( INTEGER_CPPON_OBJ_TYPE ) { unSigned = true;data = new(uint64_t); *((uint64_t *) data ) = i; siz = sizeof(uint64_t); }
+#endif
 			COInteger						*operator=(COInteger &val );
 											// cppcheck-suppress constParameter
 			COInteger						*operator=(COInteger *val ) { return( *this = *val );}
