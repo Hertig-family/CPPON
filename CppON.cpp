@@ -3549,7 +3549,7 @@ static void appendTag( string name, CppON *obj, COMap *rtn, CppON *n )
                     {
                         case INTEGER_CPPON_OBJ_TYPE:
                             // cppcheck-suppress cstyleCast
-                            if( v != ((COInteger *) obj)->toLongInt() )
+                            if( v != (uint64_t)((COInteger *) obj)->toLongInt() )
                             {
                                 // cppcheck-suppress cstyleCast
                                 rtn->append( name, new COInteger( *((COInteger *) obj) ) );

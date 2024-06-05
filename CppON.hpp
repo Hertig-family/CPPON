@@ -429,10 +429,14 @@ public:
 			CODouble						*operator = ( CODouble &val );
 											// cppcheck-suppress constParameter
 			CODouble						*operator = ( CODouble *val ) { return( *this = *val ); }
-			double							operator += ( double val ) { if( data ) { *(( double *) data ) += val; return *((double *) data);} return UD_DOUBLE;}
-			double							operator -= ( double val ) { if( data ) { *(( double *) data ) -= val; return *((double *) data);} return UD_DOUBLE;}
-			double							operator *= ( double val ) { if( data ) { *(( double *) data ) *= val; return *((double *) data);} return UD_DOUBLE;}
-			double							operator /= ( double val ) { if( data ) { *(( double *) data ) /= val; return *((double *) data);} return UD_DOUBLE;}
+			template<typename T> double     operator += ( T val ) { if( data ) { *( ( double *) data ) += (double) val; return *((double *) data );} return UD_DOUBLE; }
+			template<typename T> double     operator -= ( T val ) { if( data ) { *( ( double *) data ) -= (double) val; return *((double *) data );} return UD_DOUBLE; }
+			template<typename T> double     operator *= ( T val ) { if( data ) { *( ( double *) data ) *= (double) val; return *((double *) data );} return UD_DOUBLE; }
+			template<typename T> double     operator /= ( T val ) { if( data ) { *( ( double *) data ) /= (double) val; return *((double *) data );} return UD_DOUBLE; }
+//			double							operator += ( double val ) { if( data ) { *(( double *) data ) += val; return *((double *) data);} return UD_DOUBLE;}
+//			double							operator -= ( double val ) { if( data ) { *(( double *) data ) -= val; return *((double *) data);} return UD_DOUBLE;}
+//			double							operator *= ( double val ) { if( data ) { *(( double *) data ) *= val; return *((double *) data);} return UD_DOUBLE;}
+//			double							operator /= ( double val ) { if( data ) { *(( double *) data ) /= val; return *((double *) data);} return UD_DOUBLE;}
 
 			int								size() override { return ( data ) ? siz : 0; }
 			double							value(){ return ( data ) ? *( double *) data : 0.0; }
