@@ -638,7 +638,7 @@ void CppON::cdump( FILE *fp )
     }
 }
 
-
+#if 0
 CppON *CppON::parseJson( json_t *ob, string &tabs )
 {
     CppON    *rtn = NULL;
@@ -690,7 +690,389 @@ CppON *CppON::parseJson( json_t *ob, string &tabs )
     }
     return rtn;
 }
+#endif
 
+static __inline void DumpWhiteSpace( const char **str ) { char ch; while( 0 != (ch = **str ) &&( ' ' == ch || '\t' == ch || '\n' == ch || 'r' == ch ) ) { (*str)++; } }
+static __inline void DumpWhiteSpace( const char *(&str) ) { char ch; while( 0 != (ch = *str ) &&( ' ' == ch || '\t' == ch || '\n' == ch || 'r' == ch ) ) { str++; } }
+static __inline void DumpWhiteSpace( char &ch, const char **str ) { while( 0 != (ch = **str ) &&( ' ' == ch || '\t' == ch || '\n' == ch || 'r' == ch ) ) { (*str)++; } }
+static __inline void DumpWhiteSpace( char &ch, const char *(&str) ) { while( 0 != (ch = *str ) &&( ' ' == ch || '\t' == ch || '\n' == ch || 'r' == ch ) ) { str++; } }
+
+void CppON::RemoveWhiteSpace( const char *s, std::string &str )
+{
+	char	buf[ strlen( s ) + 1 ];
+	int		idx = 0;
+	bool	instr = false;
+	char	ch;
+
+	while( 0 != ( ch = *s++ ) )
+	{
+		if( '"' == ch )
+		{
+			instr = (instr) ? false : true;
+		}
+		if( instr )
+		{
+			buf[ idx++ ] = ch;
+		} else if( ch != ' ' && ch != '\t' && ch != '\r' && ch != '\n' ) {
+			buf[ idx++ ] = ch;
+		}
+	}
+	buf[ idx ] = '\0';
+	str = buf;
+}
+
+CppON *CppON::GetTNetstring( const char **str )
+{
+	CppON			*base = NULL;
+	uint32_t		len = (uint32_t) strtol( *str, (char **) str, 10 );
+	char			ch;
+	char			typ = '\0';
+
+	while( 0 != (ch = *(*str)++) && ( ' ' == ch || '\t' == ch || '\r' == ch || '\n' == ch ) );
+//	fprintf( stderr, "%s[%d]: Length = %d, type = '%c', String: '%s'\n", __FILE__,__LINE__, len, (*str)[ len ], *str );
+	if( ':' == ch )
+	{
+		switch ( typ = (*str)[ len ] )
+		{
+			case ',':														// string
+				{
+					std::string s( *str, len );
+					base = new COString( s );
+				}
+				break;
+			case '#':														// Integer
+				base = new COInteger( (uint64_t) strtoll( *str, NULL, 0 ) );
+				break;
+			case '^':														// float
+				base = new CODouble( strtod( *str, NULL) );
+				break;
+			case '!':														// boolean
+				if( 0 == strncasecmp( *str, "true", 4 ) )
+				{
+					base = new COBoolean( true );
+				} else if(  0 == strncasecmp( *str, "false", 5 ) ) {
+					base = new COBoolean( true );
+				}
+				break;
+			case '~':														// NULL
+				base = new CONull();
+				break;
+			case '}':														// Map
+				{
+					base = new COMap();
+					std::string s( *str, len );
+					const char	*cptr = s.c_str();
+//					fprintf( stderr, "%s[%d]: Start of map: '%s'\n", __FILE__, __LINE__, cptr );
+					while( *cptr )
+					{
+						DumpWhiteSpace( ch, cptr );
+						for( unsigned i = 0; 0 != (ch = cptr[ i ] ) && ('0' <= ch && '9' >= ch); i++);
+						COString 	*name;
+						CppON		*val;
+//						fprintf( stderr, "%s[%d]: Next char '%c'\n", __FILE__,__LINE__, ch );
+						if( ':' != ch )
+						{
+							name = (COString *) GetObj( &cptr );
+						} else {
+							name = (COString *)  GetTNetstring( &cptr );
+						}
+						DumpWhiteSpace( ch, cptr );
+//						fprintf( stderr, "%s[%d]: Name: '%s'", __FILE__, __LINE__, name->c_str() );
+						if( *cptr  && CppON::isString( name ) )
+						{
+//							const char *dummy = cptr;
+							for( unsigned i = 0; 0 != (ch = cptr[ i ] ) && ('0' <= ch && '9' >= ch); i++);
+							if( ':' != ch )
+							{
+								val = (COString *) GetObj( &cptr );
+							} else {
+								val = (COString *)  GetTNetstring( &cptr );
+							}
+							if( CppON::isObj( val ) )
+							{
+//								fprintf( stderr, "%s[%d]: %s = %s\n", __FILE__, __LINE__, name->c_str(), val->c_str() );
+								((COMap *) base )->append( name->c_str(), val );
+								delete name;
+							} else {
+//								fprintf( stderr, "%s[%d]: Failed to load object from: '%s'\n", __FILE__, __LINE__, dummy );
+								delete name;
+								delete base;
+								base = NULL;
+								break;
+							}
+						} else {
+							fprintf( stderr, "%s[%d]: Unexpected Character: %c\n", __FILE__, __LINE__, *cptr );
+							if( name )
+							{
+								delete name;
+							}
+							delete base;
+							base = NULL;
+							break;
+						}
+					}
+				}
+				break;
+			case ']':														// Array
+				{
+					base = new COArray();
+					std::string s( *str, len );
+					const char	*cptr = s.c_str();
+					while( *cptr )
+					{
+						DumpWhiteSpace( ch, cptr );
+//						fprintf( stderr, "%s[%d]: PARSE: '%s'\n", __FILE__, __LINE__, cptr );
+						for( unsigned i = 0; 0 != (ch = cptr[ i ] ) && ('0' <= ch && '9' >= ch); i++);
+						if( ':' != ch )
+						{
+							( ( COArray *) base )->append( GetObj( &cptr ) );
+						} else {
+//							CppON *obj;
+//							fprintf( stderr, "%s[%d]: Get a tnet string string: '%s'\n", __FILE__, __LINE__, cptr );
+//							( ( COArray *) base )->append( obj = GetTNetstring( &cptr ) );
+//							fprintf( stderr, "%s[%d]: Got: '%s'\n", __FILE__, __LINE__, obj->c_str() );
+							( ( COArray *) base )->append( GetTNetstring( &cptr ) );
+						}
+						if( 0 != *cptr )
+						{
+							DumpWhiteSpace( ch, cptr );
+//							if( ',' == ( ch = *cptr ) )
+							if( ',' == ch )
+							{
+								++cptr;
+							} else if(  '0' > ch || '9' < ch ) {
+								fprintf( stderr, "%s[%d]: Unexpected Character: %c\n", __FILE__, __LINE__, *cptr );
+								delete base;
+								base = NULL;
+								break;
+							}
+						}
+					}
+				}
+				break;
+			default:														// Illegal
+				break;
+		}
+		*str += (len + 1);
+//		fprintf( stderr, "String now: '%s'\n", *str );
+	}
+	return base;
+}
+CppON *CppON::GetObj( const char **str )
+{
+	DumpWhiteSpace( str );
+	CppON		*base = NULL;
+	const char	*nc = *str;
+//	const char  *save = nc;
+	char		ch = *nc++;
+
+//	fprintf( stderr, "Parse: '%c%s'\n", ch, nc );
+	if( '{' == ch )
+	{
+		COMap	*mp = new COMap();
+		bool	fail = false;
+		DumpWhiteSpace( ch, nc );
+
+//		fprintf( stderr, "Map: '%c%s;\n", ch, nc );
+		while( ! fail && 0 != ch && '}' != ch )
+		{
+			DumpWhiteSpace( ch, nc );
+			while( 0 != (ch = *nc++ ) && '"' != ch );
+			if( ch )
+			{
+				int n = 0;
+				while( 0 != ( ch = nc[ n ] ) && '"' != ch ) { n++; };
+				if( ch )
+				{
+					string name( nc, n++ );
+					nc += n;
+					DumpWhiteSpace( ch, nc );
+//					fprintf( stderr, "Str:'%s'\n", nc );
+//					fprintf( stderr, "'%s' = ", name.c_str() );
+//					if( ':' == ( ch = *nc ) )
+					if( ':' == ch )
+					{
+						nc++;
+						CppON *obj;
+
+						DumpWhiteSpace( ch, nc );
+						for( unsigned i = 0; 0 != (ch = nc[ i ] ) && ('0' <= ch && '9' >= ch); i++);
+						if( ':' != ch )
+						{
+							obj = GetObj( &nc );
+						} else {
+							obj = GetTNetstring( &nc );
+						}
+						if( obj )
+						{
+//							fprintf( stderr, "%s\n", obj->c_str() );
+							mp->append( name.c_str(), obj );
+							DumpWhiteSpace( ch, nc );
+							// Character should be a comma or a '}';
+//							if( ',' == (ch = *nc ) )
+							if( ',' == ch )
+							{
+								nc++;
+							} else if( ch && '}' != ch ) {
+								fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+								const char *ree = &nc[ -2 ];
+								std::string sub( &nc[ -2 ], 48 );
+
+								fprintf( stderr, "INPUT: %s\n", sub.c_str() );
+
+								fprintf( stderr, " 0x%.2X 0x%.2X 0x%.2X 0x%.2X\n", (unsigned) ree[ 0 ], (unsigned) ree[ 1 ], (unsigned) ree[ 2 ], (unsigned) ree[ 3 ] );
+								fail = true;
+							}
+						} else {
+							fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+							fail = true;
+						}
+					} else {
+						fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+						fail = true;
+					}
+				} else {
+					fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+					fail = true;
+				}
+			} else {
+				fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+				fail = true;
+			}
+		}
+		if( ! fail )
+		{
+			base = mp;
+		} else {
+			fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+			delete mp;
+		}
+		*str = &nc[ 1 ];
+		DumpWhiteSpace( ch, str );
+
+	} else if( '[' == ch ) {
+//		fprintf( stderr, "ARRAY: '%c%s'\n", ch, nc );
+		COArray		*arr = new COArray();
+		bool		fail = false;
+		DumpWhiteSpace( nc );
+		while( !fail && 0 != ch && ']' != ch )
+		{
+			CppON *obj;
+			for( unsigned i = 0; 0 != (ch = nc[ i ] ) && ('0' <= ch && '9' >= ch); i++);
+			if( ':' != ch )
+			{
+				obj = GetObj( &nc );
+			} else {
+				obj = GetTNetstring( &nc );
+			}
+			if( obj )
+			{
+				DumpWhiteSpace( ch, nc );
+//				fprintf( stderr, "Val: '%s'\n", obj->c_str() );
+				// Character should be a comma or a '}';
+//				if( ',' == ( ch = *nc ) )
+				if( ',' == ch )
+				{
+					nc++;
+				} else if( ch && ']' != ch ) {
+					fail = true;
+				}
+				arr->append( obj );
+			} else {
+				fail = true;
+			}
+		}
+		if( ! fail )
+		{
+			base = arr;
+		} else {
+			fprintf( stderr, "%s[%d] ch = 0x%.2X => '%c'\n", __FILE__,__LINE__, (unsigned)ch, ch  );
+			delete arr;
+		}
+		*str = &nc[ 1 ];
+		DumpWhiteSpace( ch, str );
+	} else if( '"' == ch ) {
+		int n = 0;
+		std::vector<char> acum;
+		while( '"' != ( ch = nc[ n ] ) && 0 != ch )
+		{
+			if( 0x5C == ch )
+			{
+				ch = nc[ ++n ];
+			}
+			acum.push_back( ch );
+			n++;
+		};
+		std::string s( acum.begin(), acum.end() );
+		base = new COString( s.c_str() );
+		*str = &nc[ ++n ];
+		DumpWhiteSpace( ch, str );
+	} else if( ( 't' == ch || 'T' == ch ) && 0 == strncasecmp( nc, "rue", 3 ) && ( ! (ch == *(nc + 3)) || ',' == ch || ' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch ) ) {
+		*str += 4;
+		base = new COBoolean( true );
+		DumpWhiteSpace( ch, str );
+	} else if( ( 'f' == ch || 'F' == ch ) && 0 == strncasecmp( nc, "alse", 4 )  && ( ! (ch == *(nc + 4)) || ',' == ch || ' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch ) ) {
+		*str += 5;
+		base = new COBoolean( false );
+		DumpWhiteSpace( ch, str );
+	} else if( ( '0' <= ch && '9' >= ch ) || '-' == ch || '+' == ch ) {
+		char c;
+		const char *dot = NULL;
+		bool	neg = false;
+		if( '+' == ch )
+		{
+			nc++;
+		} else if( '-' == ch ) {
+			nc++;
+			neg = true;
+		}
+		for( int i = 0; 0 != ( c = nc[ i ] ) && ',' != c && '}' != c; i++){ if( '.' == c ){ dot = &nc[ i ]; break;}}
+		if( ! dot )
+		{
+			uint64_t n = 0;
+			if( '0' == ch && 'x' == *nc )
+			{
+				n = strtoll( &nc[ -1 ], (char**) str, 16 );
+			} else {
+				n = strtoll( &nc[ -1 ], (char**) str, 10 );
+			}
+			if( neg ) {n = -n;}
+			base = new COInteger( n );
+		} else {
+			double d = strtod( &nc[ -1 ], (char**) str );
+			if( neg ) {d = -d;}
+			base = new CODouble( d );
+		}
+		DumpWhiteSpace( ch, str );
+	} else {
+		fprintf( stderr, "\n%c%s is not an object\n", ch, nc );
+		exit( 0 );
+	}
+	return base;
+}
+
+CppON *CppON::parseJson( const char *str )
+{
+	if( str )
+	{
+		char ch;
+		while( 0 != (ch = *str ) && ( ' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch ) ) { ++str; }
+		if( '0' <= ch && '9' >= ch )
+		{
+			return GetTNetstring( &str );
+		} else if( ch ) {
+			return GetObj( &str );
+//			const char	*nc;
+//			std::string dat;
+//			RemoveWhiteSpace( str, dat );
+//			nc = dat.c_str();
+//			return ( GetObj( &nc ) );
+		}
+	}
+	return NULL;
+}
+
+#if 0
 CppON *CppON::parseJson( const char *str )
 {
     CppON     *rtn = NULL;
@@ -764,7 +1146,7 @@ CppON *CppON::parseJson( const char *str )
     }
     return rtn;
 }
-
+#endif
 // cppcheck-suppress unusedFunction
 CppON *CppON::parseJsonFile( const char *path )
 {
@@ -2085,10 +2467,99 @@ COMap::COMap( COMap & mt ) : CppON(  MAP_CPPON_OBJ_TYPE )
     }
 };
 
+/*
+ * Does not check for null string
+ */
+void COMap::doParse( const char *str )
+{
+	DumpWhiteSpace( str );
+	const char	*sav = str;
+	unsigned 	i;
+	if( '{' == *str )
+	{
+		char 		name[ 256 ];
+		char		ch;
+		CppON		*obj = NULL;
+		++str;
+		DumpWhiteSpace( ch, str );
+		while( *str )
+		{
+			sav = str;
+			if( '"' == *str++ )
+			{
+				for( i = 0; i < 255 && 0 != ( ch = *str++ ) && '"' != ch; i++ )
+				{
+					name[ i ] = ch;
+				}
+				name[ i ] = '\0';
+				if( '"' == ch )
+				{
+					DumpWhiteSpace( ch, str );
+					sav = str;
+//					if( ':' == *str )
+					if( ':' == ch )
+					{
+						++str;
+						DumpWhiteSpace( ch, str );
+						sav = str;
+						while( 0 != (ch = *str ) && ( ' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch ) ) { ++str; }
+						if( '0' <= ch && '9' >= ch )
+						{
+							obj = GetTNetstring( &str );
+						} else if( ch ) {
+							obj =  GetObj( &str );
+						}
+						if( obj )
+						{
+							append( name, obj );
+							obj = NULL;
+							DumpWhiteSpace( ch, str );
+//							if( *str )
+							if( ch )
+							{
+								if( ',' == *str )
+								{
+									str++;
+									DumpWhiteSpace( ch, str );
+								} else if( '}' == *str ) {
+									break;
+								} else {
+									fprintf( stderr, "%s[%d]: Unexpected character: '%c'\n", __FILE__,__LINE__, *str );
+									break;
+								}
+							}
+						} else {
+							std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+							fprintf( stderr, "%s[%d]: Failed to get object: '%s'\n", __FILE__,__LINE__, s.c_str() );
+						}
+					} else {
+						std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+						fprintf( stderr, "%s[%d]: Unexpected character: '%s'\n", __FILE__,__LINE__, sav );
+						break;
+					}
+				} else {
+					std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+					fprintf( stderr, "%s[%d]: Unexpected character: '%s'\n", __FILE__,__LINE__, sav );
+					break;
+				}
+			} else {
+				std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+				fprintf( stderr, "%s[%d]: Unexpected character: '%s'\n", __FILE__,__LINE__, sav );
+				break;
+			}
+		}
+	} else {
+		std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+		fprintf( stderr, "%s[%d]: Parse ERROR: Expected '{' got '%s'\n", __FILE__, __LINE__, sav );
+	}
+}
 void COMap::parseData( const char *str )
 {
-    if( str )
-    {
+	if( str )
+	{
+#if 1
+		doParse( str );
+#else
         json_t        *root = NULL;
         json_error_t  error;
         char          *np;
@@ -2132,6 +2603,7 @@ void COMap::parseData( const char *str )
             }
         }
         json_decref( root );
+#endif
     }
 }
 
@@ -2173,7 +2645,7 @@ COMap::COMap( const char *path, const char *file ): CppON( MAP_CPPON_OBJ_TYPE )
 	    }
 	    buf[ rd ] = '\0';
 	    fclose( fp );
-
+//	    fprintf( stderr, "DATA TO PARSE: '%s'\n", buf );
 	    parseData( buf );
 
 	    free(buf );
@@ -2185,7 +2657,7 @@ COMap::COMap( const char *path, const char *file ): CppON( MAP_CPPON_OBJ_TYPE )
 COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
 {
     data = new map<string, CppON*>();
-#if 0
+#if 1
     parseData( str );
 #else
     if( str )
@@ -2239,6 +2711,18 @@ COMap::COMap( const char *str ): CppON(  MAP_CPPON_OBJ_TYPE )
 
 COMap *COMap::operator=( const char *str )
 {
+#if 1
+    if( data )
+    {
+        (( map <string, CppON *> * ) data)->clear();
+    } else {
+        data = new map<string, CppON*>();
+    }
+    order.clear();
+
+    doParse( str );
+
+#else
     if( str )
     {
         json_t                  *root = NULL;
@@ -2307,6 +2791,7 @@ COMap *COMap::operator=( const char *str )
         }
         order.clear();
     }
+#endif
     return this;
 }
 
@@ -4053,10 +4538,92 @@ COArray::COArray( COArray & at ) : CppON( ARRAY_CPPON_OBJ_TYPE )
         }
     }
 }
+
+#if 0
+void COArray::parseData( const char *str )
+{
+	if( str )
+	{
+		char 	ch;
+		while( 0 != (ch = *str) && ' ' != ch && '\t' != ch && '\n' != ch && '\r' != ch ) { str++;}
+		if( ch )
+		{
+			char	*np;
+			int 	cnt = strtol( str, &np, 0 );					// check to see if it is a tnetstring
+			string 	tabs("");
+			if( np )
+			{
+
+			}
+			std::string dat;
+			const char	*nc;
+			RemoveWhiteSpace( str, dat );
+			nc = dat.c_str();
+
+			//return ( GetObj( &nc ) );
+		}
+	}
+}
+#endif
 void COArray::parseData( const char *str )
 {
     if( str )
     {
+		DumpWhiteSpace( str );
+		const char	*sav = str;
+		unsigned 	i;
+		if( '[' == *str )
+		{
+//			char 		name[ 256 ];
+			char		ch;
+			CppON		*obj = NULL;
+			++str;
+			DumpWhiteSpace( ch, str );
+//			while( *str )
+			while( ch )
+			{
+				sav = str;
+				while( 0 != (ch = *str ) && ( ' ' == ch || '\t' == ch || '\n' == ch || '\r' == ch ) ) { ++str; }
+				if( '0' <= ch && '9' >= ch )
+				{
+					obj = GetTNetstring( &str );
+				} else if( ']' == ch ) {
+					break;
+				} else if( ch ) {
+					obj =  GetObj( &str );
+				}
+				if( obj )
+				{
+					append( obj );
+					obj = NULL;
+					DumpWhiteSpace( ch, str );
+//					if( *str )
+					if( ch )
+					{
+						if( ',' == *str )
+						{
+							str++;
+							DumpWhiteSpace( ch, str );
+//						} else if( ']' == *str ) {
+						} else if( ']' == ch ) {
+							break;
+						} else {
+							fprintf( stderr, "%s[%d]: Unexpected character: '%c'\n", __FILE__,__LINE__, *str );
+							break;
+						}
+					}
+				} else {
+					std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+					fprintf( stderr, "%s[%d]: Failed to get object: '%s'\n", __FILE__,__LINE__, s.c_str() );
+				}
+			}
+		} else {
+			std::string s( sav, (( i = strlen( sav ) ) > 24 )?24:i );
+			fprintf( stderr, "%s[%d]: Parse ERROR: Expected '[' got '%s'\n", __FILE__, __LINE__, sav );
+		}
+#if 1
+
+#else
         json_t        *root = NULL;
         json_error_t  error;
         char          *np;
@@ -4101,6 +4668,7 @@ void COArray::parseData( const char *str )
         {
             json_decref( root );
         }
+#endif
     }
 }
 

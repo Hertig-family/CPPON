@@ -197,7 +197,7 @@
 #include <vector>
 #include <semaphore.h>
 
-#include <jansson.h>
+//#include <jansson.h>
 
 
 #if HAS_XML
@@ -316,7 +316,12 @@ public:
 	static	CppON							*readObj( FILE *fp );
 	static  CppON							*parse( const char *str, char **rstr );         // Create a CppON object from a net string
 	static  CppON							*parseJson( const char *str );                  // Create a CppON object form a json string
-	static  CppON							*parseJson( json_t *ob, std::string &tabs );    // Create a CppON object form a Json object
+//	static  CppON							*parseJson( json_t *ob, std::string &tabs );    // Create a CppON object form a Json object
+	static	void							RemoveWhiteSpace( const char *s, std::string &str );
+	static 	CppON							*GetTNetstring( const char **str );
+	static	CppON 							*GetObj( const char **str );
+//	static	CppON							*parseJson( const char **str );
+
 #if HAS_XML
 	static  CppON							*parseXML( const char *str );
 #endif
@@ -609,6 +614,7 @@ std::map<std::string,CppON*>::iterator		end() { return ((std::map< std::string, 
 			void							upDate( COMap *map, const char *name );
 			void							merge( COMap *map, const char *name );
 private:
+			void							doParse( const char *str );
 			void							parseData( const char *str );
 };
 
@@ -673,7 +679,7 @@ public:
 			void						cdump( FILE *fp = stderr ) override ;
 			COArray						*diff( COArray &newObj, const char *name = NULL);
 private:
-			void							parseData( const char *str );
+			void						parseData( const char *str );
 };
 
 #endif /* CPPON_HPP_ */
